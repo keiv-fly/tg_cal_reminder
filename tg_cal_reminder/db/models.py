@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Index, String
@@ -21,7 +21,7 @@ class User(Base):
     username: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     language: Mapped[str] = mapped_column(String(2), nullable=False, default="en")
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, default=datetime.utcnow
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     # Relationships
@@ -39,19 +39,13 @@ class Event(Base):
     __tablename__ = "events"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    start_time: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
-    end_time: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    end_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, default=datetime.utcnow
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     # Relationships
@@ -64,6 +58,4 @@ class Event(Base):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"<Event(id={self.id}, title={self.title}, start_time={self.start_time})>"
-        )
+        return f"<Event(id={self.id}, title={self.title}, start_time={self.start_time})>"
