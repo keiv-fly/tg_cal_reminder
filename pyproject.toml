@@ -30,10 +30,6 @@ dependencies = [
     "pydantic==2.11.4",         # Data validation
     "pydantic_core==2.33.2",    # Pydantic core components
     "annotated-types==0.7.0",   # Support for type annotations
-]
-
-[project.optional-dependencies]
-dev = [
     "pytest==8.3.5",
     "pytest-asyncio==0.26.0",
     "pytest-cov==6.1.1",
