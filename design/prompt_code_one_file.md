@@ -1,3 +1,98 @@
+Given this program description, file structure, list of tg commands and specification create a code for file db/models.py
+
+# Program Description
+Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** database, and **OpenRouter LLM** support.
+
+* There should be a secret word that will allow the user to use the bot. This secret is given after /start.
+* On first contact after sending secret word the bot asks the user’s preferred language, then answers in that language.
+* All requirements are written in English.
+* Commands are fixed
+* the LLM only translates free-form user text into those commands
+* Event format: `YYYY-MM-DD HH:MM [optional YYYY-MM-DD HH:MM] Title` (no semicolon). Past dates are accepted but trigger a warning.
+
+## Features
+1. Save events to a user’s calendar.
+2. Show all events, sorted by time, for the current or any specified user.
+3. Close events by their IDs.
+4. Every evening, list events planned for the next day.
+5. Every morning, list events planned for the same day.
+6. Every Monday, list events planned for the week.
+
+The bot polls Telegram for messages—no webhooks are used.
+
+# File Structure
+
+calendar_bot/
+├── .env                        # Environment variables: BOT_TOKEN, DATABASE_URL, OPENROUTER_API_KEY
+├── README.md                   # Project overview, installation, usage instructions
+├── pyproject.toml              # Python project metadata and dependencies
+├── alembic.ini                 # Configuration for Alembic database migrations
+├── migrations/                 # Alembic-generated migration scripts
+│   └── versions/
+│       └── xxxx_initial.py     # Initial schema setup: users and events tables
+├── tg_cal_reminder/            # Application source code
+│   ├── bot/                    # Bot logic and scheduling
+│   │   ├── __init__.py         
+│   │   ├── polling.py          # HTTP polling loop using httpx to fetch Telegram updates
+│   │   ├── handlers.py         # Dispatches incoming messages to command handlers via LLM translation
+│   │   └── scheduler.py        # Defines scheduled tasks for daily, evening, and weekly digests
+│   ├── db/                     # Database layer
+│   │   ├── __init__.py
+│   │   ├── models.py           # SQLAlchemy ORM models: User and Event definitions
+│   │   ├── crud.py             # CRUD functions: add_event, list_events, close_event, etc.
+│   │   └── session.py          # Async engine and session factory (asyncpg/SQLAlchemy)
+│   ├── i18n/                   # Internationalization
+│   │   ├── __init__.py
+│   │   └── messages.py         # Localized message templates keyed by lang_code
+│   ├── llm/                    # LLM integration
+│   │   ├── __init__.py
+│   │   └── translator.py       # OpenRouter prompt construction and command translation logic
+│   ├── utils/                  # Utility modules
+│   │   ├── __init__.py
+│   │   ├── parser.py           # Parses event strings (YYYY-MM-DD HH:MM ...) and validates dates
+│   │   └── timezones.py        # Europe/Paris timezone helpers and date calculations
+│   └── main.py                 # Entrypoint: loads config, initializes DB, starts polling & scheduler
+└── tests/                      # Test suite
+    ├── unit/                  # Unit tests for individual modules
+    │   ├── test_polling.py     # Tests for polling.py logic
+    │   ├── test_handlers.py    # Tests for command handling in handlers.py
+    │   ├── test_scheduler.py   # Tests for scheduled tasks definitions
+    │   ├── test_models.py      # Tests for ORM models in models.py
+    │   ├── test_crud.py        # Tests for CRUD functions in crud.py
+    │   ├── test_session.py     # Tests for DB session in session.py
+    │   ├── test_messages.py    # Tests for localized messages in messages.py
+    │   ├── test_translator.py  # Tests for translator logic in translator.py
+    │   ├── test_parser.py      # Tests for event parsing in parser.py
+    │   └── test_timezones.py   # Tests for timezone helpers in timezones.py
+    └── integration/           # End-to-end integration tests
+        └── test_end_to_end.py  # Simulates bot flow: user registration, add/list/close events
+
+# List of telegram bot commands
+
+(Anything in ⟨angle brackets⟩ is required; items in \[brackets] are optional.)
+
+| Command                       | Parameters & Syntax                                                                               | What it does                                                                                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **/start**                    | –                                                                                                 | Begins the conversation and prompts the user for their preferred language.                                                                                                                |
+| **/lang ⟨code⟩**              | **code** – two-letter ISO 639-1 language code (e.g., `en`, `fr`, `de`)                            | Changes the language the bot uses to reply.                                                                                                                                               |
+| **/add\_event ⟨event\_line⟩** | **event\_line** – single line in the exact format<br/>`YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` | Saves a new calendar entry.<br/>• If the date/time is in the past, the bot saves it but warns the user.<br/>• If a second date/time is supplied, it is treated as the event’s *end* time. |
+| **/list\_events \[username]** | **username** – Telegram @username or numeric ID of the target user (omit for yourself)            | Lists all events for the chosen user, sorted chronologically (open events first, then closed).                                                                                            |
+| **/close\_event ⟨id …⟩**      | One or more **event ID** values, space-separated                                                  | Marks the specified events as *closed* (done/archived).                                                                                                                                   |
+| **/help**                     | –                                                                                                 | Shows a short reminder of every command and its syntax.                                                                                                                                   |
+
+---
+
+### Automatic daily & weekly digests
+
+These are *notifications*, not commands:
+
+* **Every evening (local time):** list next day’s events.
+* **Every morning:** list same-day events.
+* **Every Monday morning:** list events for the coming week.
+
+Users don’t need to request these; the bot sends them automatically based on the stored calendar data.
+
+
 # Specification
 
 Below is a consolidated specification that pulls together everything in the description, file-tree and command table, plus the implicit constraints that follow from them.

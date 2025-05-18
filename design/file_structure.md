@@ -8,7 +8,7 @@ calendar_bot/
 ├── migrations/                 # Alembic-generated migration scripts
 │   └── versions/
 │       └── xxxx_initial.py     # Initial schema setup: users and events tables
-├── src/                        # Application source code
+├── tg_cal_reminder/            # Application source code
 │   ├── bot/                    # Bot logic and scheduling
 │   │   ├── __init__.py         
 │   │   ├── polling.py          # HTTP polling loop using httpx to fetch Telegram updates
