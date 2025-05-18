@@ -4,7 +4,8 @@ You are an experienced requirements writer. Create requirements for the followin
 # Program Description
 Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** database, and **OpenRouter LLM** support.
 
-* On first contact the bot asks the user’s preferred language, then answers in that language.
+* There should be a secret word that will allow the user to use the bot. This secret is given after /start.
+* On first contact after sending secret word the bot asks the user’s preferred language, then answers in that language.
 * All requirements are written in English.
 * Commands are fixed
 * the LLM only translates free-form user text into those commands
@@ -20,4 +21,4 @@ Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** da
 
 The bot polls Telegram for messages—no webhooks are used.
 
-There should be a secret word that will allow the user to use the bot. This secret is given after /start
+
