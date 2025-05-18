@@ -1,7 +1,7 @@
 # Original prompt start
 You are an experienced requirements writer. Create requirements for the following program: 
 
-# Description
+# Program Description
 Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** database, and **OpenRouter LLM** support.
 
 * On first contact the bot asks the user’s preferred language, then answers in that language.
@@ -19,3 +19,5 @@ Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** da
 6. Every Monday, list events planned for the week.
 
 The bot polls Telegram for messages—no webhooks are used.
+
+There should be a secret word that will allow the user to use the bot. This secret is given after /start

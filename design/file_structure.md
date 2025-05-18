@@ -1,3 +1,5 @@
+# File Structure
+
 calendar_bot/
 ├── .env                        # Environment variables: BOT_TOKEN, DATABASE_URL, OPENROUTER_API_KEY
 ├── README.md                   # Project overview, installation, usage instructions
