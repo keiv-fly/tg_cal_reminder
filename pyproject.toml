@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "calendar_bot"
+version = "0.1.0"
+description = "Telegram bot with PostgreSQL database and OpenRouter LLM support for calendar management"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Calendar Bot Developer", email = "developer@example.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Topic :: Communications :: Chat",
+]
+dependencies = [
+    "httpx==0.28.1",            # HTTP client for Telegram API
+    "sqlalchemy==2.0.41",       # ORM for database models
+    "asyncpg==0.30.0",          # PostgreSQL async driver
+    "alembic==1.15.2",          # Database migrations
+    "python-dotenv==1.1.0",     # Environment variable management
+    "APScheduler==3.11.0",      # Scheduler for digests
+    "tzdata==2025.2",           # Timezone data
+    "tzlocal==5.3.1",           # Local timezone
+    "pydantic==2.11.4",         # Data validation
+    "pydantic_core==2.33.2",    # Pydantic core components
+    "annotated-types==0.7.0",   # Support for type annotations
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pytest-asyncio==0.26.0",
+    "pytest-cov==6.1.1",
+    "ruff==0.11.10",           # Modern Python linter
+    "black==25.1.0",           # Code formatter
+    "mypy==1.15.0",            # Type checking
+    "coverage==7.8.0",         # Code coverage
+    "typing-inspection==0.4.0", # Additional typing tools
+]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "RET", "SIM"]
+target-version = "py312"
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.mypy]
+python_version = "3.12"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+asyncio_mode = "auto"
