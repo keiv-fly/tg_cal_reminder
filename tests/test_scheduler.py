@@ -1,0 +1,48 @@
+import datetime
+
+from apscheduler.triggers.cron import CronTrigger
+
+from tg_cal_reminder.bot.scheduler import (
+    PARIS_TZ,
+    create_scheduler,
+    evening_window,
+    morning_window,
+    weekly_window,
+)
+
+
+def test_create_scheduler_jobs():
+    scheduler = create_scheduler()
+    job_ids = {job.id for job in scheduler.get_jobs()}
+    assert job_ids == {"morning_digest", "evening_digest", "weekly_digest"}
+
+    morning = scheduler.get_job("morning_digest")
+    assert isinstance(morning.trigger, CronTrigger)
+    assert str(morning.trigger.fields[5].expressions[0]) == "8"
+    assert str(morning.trigger.fields[6].expressions[0]) == "0"
+    assert morning.trigger.timezone == PARIS_TZ
+
+    evening = scheduler.get_job("evening_digest")
+    assert isinstance(evening.trigger, CronTrigger)
+    assert str(evening.trigger.fields[5].expressions[0]) == "19"
+    assert str(evening.trigger.fields[6].expressions[0]) == "0"
+
+    weekly = scheduler.get_job("weekly_digest")
+    assert isinstance(weekly.trigger, CronTrigger)
+    assert str(weekly.trigger.fields[4].expressions[0]) == "mon"
+
+
+def test_digest_time_windows():
+    sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=PARIS_TZ)
+
+    start, end = morning_window(sample)
+    assert start == datetime.datetime(2024, 3, 5, 23, 0, tzinfo=datetime.timezone.utc)
+    assert end == datetime.datetime(2024, 3, 6, 22, 59, 59, tzinfo=datetime.timezone.utc)
+
+    start, end = evening_window(sample)
+    assert start == datetime.datetime(2024, 3, 6, 23, 0, tzinfo=datetime.timezone.utc)
+    assert end == datetime.datetime(2024, 3, 7, 22, 59, 59, tzinfo=datetime.timezone.utc)
+
+    start, end = weekly_window(sample)
+    assert start == datetime.datetime(2024, 3, 3, 23, 0, tzinfo=datetime.timezone.utc)
+    assert end == datetime.datetime(2024, 3, 10, 22, 59, 59, tzinfo=datetime.timezone.utc)
