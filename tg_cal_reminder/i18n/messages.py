@@ -39,7 +39,6 @@ MESSAGES: dict[str, dict[str, str]] = {
             "/close_event <id …> – закрыть события\n"
             "/lang <code> – изменить язык"
         ),
-        "unknown_command": "Неизвестная команда. Отправьте /help для справки.",
     },
 }
 
