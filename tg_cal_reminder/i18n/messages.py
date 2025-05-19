@@ -29,6 +29,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         ),
         # Intentionally omit 'unknown_command' to test fallback
     },
+    "ru": {
+        "secret_prompt": "Пожалуйста, ответьте секретным словом, чтобы продолжить.",
+        "language_prompt": "Отправьте /lang <code> чтобы выбрать язык.",
+        "language_set": "Язык изменен на {language}.",
+        "help": (
+            "/add_event <событие> – добавить событие\n"
+            "/list_events [пользователь] – список событий\n"
+            "/close_event <id …> – закрыть события\n"
+            "/lang <code> – изменить язык"
+        ),
+        "unknown_command": "Неизвестная команда. Отправьте /help для справки.",
+    },
 }
 
 
