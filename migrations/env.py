@@ -16,6 +16,10 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def get_url() -> str:
     url = os.getenv("DATABASE_URL")

@@ -9,6 +9,10 @@ from tg_cal_reminder.bot.update import handle_update
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import Base, User
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 UPDATE = {
     "ok": True,
     "result": [
