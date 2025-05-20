@@ -69,3 +69,8 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.hatch.scripts]
+test = "pytest --cov=tg_cal_reminder"
+integration = "pytest integration_tests --cov=tg_cal_reminder"
+check = ["hatch run test", "hatch run integration"]
