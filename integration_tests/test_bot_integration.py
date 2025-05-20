@@ -1,5 +1,6 @@
 import httpx
 import pytest
+import pytest_asyncio
 import respx
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 import os
@@ -40,7 +41,7 @@ def db_url(integration_enabled) -> str:
     return "sqlite+aiosqlite:///:memory:"
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture
 async def session_factory(db_url):
     engine = create_async_engine(db_url, echo=False)
     async with engine.begin() as conn:
