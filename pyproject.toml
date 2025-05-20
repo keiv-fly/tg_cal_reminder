@@ -33,6 +33,7 @@ dependencies = [
     "pytest==8.3.5",
     "pytest-asyncio==0.26.0",
     "pytest-cov==6.1.1",
+    "pytest-respx==0.22.0",
     "ruff==0.11.10",           # Modern Python linter
     "black==25.1.0",           # Code formatter
     "mypy==1.15.0",            # Type checking
@@ -64,7 +65,7 @@ warn_unused_ignores = true
 warn_unused_configs = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "integration_tests"]
 python_files = "test_*.py"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
