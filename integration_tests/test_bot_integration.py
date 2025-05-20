@@ -1,5 +1,3 @@
-import os
-
 import httpx
 import pytest
 import respx
@@ -27,14 +25,8 @@ UPDATE = {
 
 
 @pytest.fixture(scope="session")
-def integration_enabled():
-    if not os.environ.get("RUN_INTEGRATION_TESTS"):
-        pytest.skip("integration tests disabled", allow_module_level=True)
-
-
-@pytest.fixture(scope="session")
-def db_url(integration_enabled):
-    return "postgresql+asyncpg://test:test@localhost:5432/test_db"
+def db_url() -> str:
+    return "sqlite+aiosqlite:///:memory:"
 
 
 @pytest.fixture(scope="session")
@@ -50,7 +42,7 @@ async def session_factory(db_url):
 
 
 @pytest.fixture
-def telegram_mock(integration_enabled):
+def telegram_mock():
     with respx.mock(assert_all_called=False) as mock:
         mock.get("https://api.telegram.org/botTEST_TOKEN/getUpdates").respond(
             json=UPDATE, status_code=200
@@ -63,8 +55,6 @@ def telegram_mock(integration_enabled):
 
 @pytest.mark.asyncio
 async def test_start_command_creates_user(session_factory, telegram_mock):
-    os.environ["BOT_TOKEN"] = "TEST_TOKEN"
-    os.environ["DATABASE_URL"] = "postgresql+asyncpg://test:test@localhost:5432/test_db"
 
     async with httpx.AsyncClient(base_url="https://api.telegram.org/botTEST_TOKEN/") as tg_client:
         poller = Poller(
