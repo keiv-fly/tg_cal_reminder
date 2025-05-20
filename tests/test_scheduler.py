@@ -3,7 +3,6 @@ import datetime
 from apscheduler.triggers.cron import CronTrigger
 
 from tg_cal_reminder.bot.scheduler import (
-    PARIS_TZ,
     create_scheduler,
     evening_window,
     morning_window,
@@ -20,7 +19,7 @@ def test_create_scheduler_jobs():
     assert isinstance(morning.trigger, CronTrigger)
     assert str(morning.trigger.fields[5].expressions[0]) == "8"
     assert str(morning.trigger.fields[6].expressions[0]) == "0"
-    assert morning.trigger.timezone == PARIS_TZ
+    assert morning.trigger.timezone == datetime.UTC
 
     evening = scheduler.get_job("evening_digest")
     assert isinstance(evening.trigger, CronTrigger)
@@ -33,7 +32,7 @@ def test_create_scheduler_jobs():
 
 
 def test_digest_time_windows():
-    sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=PARIS_TZ)
+    sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=datetime.UTC)
 
     start, end = morning_window(sample)
     assert start == datetime.datetime(2024, 3, 5, 23, 0, tzinfo=datetime.UTC)

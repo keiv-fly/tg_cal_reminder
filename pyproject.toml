@@ -45,8 +45,10 @@ dependencies = [
 
 [tool.ruff]
 line-length = 100
-select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "RET", "SIM"]
 target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "RET", "SIM"]
 
 [tool.black]
 line-length = 100

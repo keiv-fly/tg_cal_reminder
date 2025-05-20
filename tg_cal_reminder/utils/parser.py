@@ -32,7 +32,9 @@ def _parse_time(token: str) -> datetime:
         raise EventParseError("time") from exc
 
 
-def parse_event_line(line: str, tzinfo: ZoneInfo = PARIS_TZ) -> tuple[datetime, datetime | None, str]:
+def parse_event_line(
+    line: str, tzinfo: ZoneInfo = PARIS_TZ
+) -> tuple[datetime, datetime | None, str]:
     """Parse ``line`` into start time, optional end time and title.
 
     Datetimes are returned in UTC.
