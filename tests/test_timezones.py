@@ -14,7 +14,7 @@ from tg_cal_reminder.utils.timezones import (
 
 def test_constants():
     assert PARIS.key == "Europe/Paris"
-    assert UTC is timezone.utc
+    assert UTC is datetime.UTC
 
 
 def test_to_paris_and_to_utc_roundtrip():

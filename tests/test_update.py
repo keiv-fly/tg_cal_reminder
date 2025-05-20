@@ -4,8 +4,8 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from tg_cal_reminder.bot.update import handle_update
-from tg_cal_reminder.db.models import Base
 from tg_cal_reminder.db import crud
+from tg_cal_reminder.db.models import Base
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
@@ -29,13 +29,18 @@ async def test_handle_update_creates_user_and_sends_message(monkeypatch, session
         return httpx.Response(200, json={"ok": True})
 
     transport = httpx.MockTransport(transport_handler)
-    async with httpx.AsyncClient(transport=transport, base_url="https://api.telegram.org/botTOKEN/") as tg_client:
+    async with httpx.AsyncClient(
+        transport=transport, base_url="https://api.telegram.org/botTOKEN/"
+    ) as tg_client:
+
         async def dummy_dispatch(session, user, text, lang, translator):
             return "ok"
 
         monkeypatch.setattr("tg_cal_reminder.bot.handlers.dispatch", dummy_dispatch)
 
-        update = {"message": {"text": "/start", "chat": {"id": 1}, "from": {"id": 5, "username": "bob"}}}
+        update = {
+            "message": {"text": "/start", "chat": {"id": 1}, "from": {"id": 5, "username": "bob"}}
+        }
         await handle_update(update, tg_client, session_factory, lambda *_: None)
 
     assert history

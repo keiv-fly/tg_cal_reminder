@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime, timezone
 import re
-from typing import Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
+from datetime import UTC, datetime
 
 from tg_cal_reminder.db import crud
-from tg_cal_reminder.db.models import Event, User
+from tg_cal_reminder.db.models import User
 
 SECRET_WORD = "open-sesame"
 
 _EVENT_RE = re.compile(
-    r"^(?P<start>\d{4}-\d{2}-\d{2} \d{2}:\d{2})(?: (?P<end>\d{4}-\d{2}-\d{2} \d{2}:\d{2}))? (?P<title>.+)$"
+    r"^(?P<start>\d{4}-\d{2}-\d{2} \d{2}:\d{2})"
+    r"(?: (?P<end>\d{4}-\d{2}-\d{2} \d{2}:\d{2}))?"
+    r" (?P<title>.+)$"
 )
 
 
@@ -30,11 +32,11 @@ async def parse_event_line(event_line: str) -> tuple[datetime, datetime | None, 
     if not match:
         raise HandlerError("Invalid event format")
 
-    start = datetime.fromisoformat(match.group("start")).replace(tzinfo=timezone.utc)
+    start = datetime.fromisoformat(match.group("start")).replace(tzinfo=UTC)
     end = match.group("end")
     end_dt = None
     if end:
-        end_dt = datetime.fromisoformat(end).replace(tzinfo=timezone.utc)
+        end_dt = datetime.fromisoformat(end).replace(tzinfo=UTC)
     title = match.group("title")
     return start, end_dt, title
 
@@ -55,7 +57,7 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
     start, end, title = await parse_event_line(args)
     event = await crud.create_event(ctx.session, ctx.user.id, start, title, end)
     warning = ""
-    if start < datetime.now(timezone.utc):
+    if start < datetime.now(UTC):
         warning = " (past event)"
     return f"Event {event.id} added{warning}"
 
@@ -120,4 +122,3 @@ async def dispatch(
     if not handler:
         raise HandlerError("Unknown command")
     return await handler(ctx, args)
-

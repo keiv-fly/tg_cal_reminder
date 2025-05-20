@@ -36,13 +36,13 @@ def test_digest_time_windows():
     sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=PARIS_TZ)
 
     start, end = morning_window(sample)
-    assert start == datetime.datetime(2024, 3, 5, 23, 0, tzinfo=datetime.timezone.utc)
-    assert end == datetime.datetime(2024, 3, 6, 22, 59, 59, tzinfo=datetime.timezone.utc)
+    assert start == datetime.datetime(2024, 3, 5, 23, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 6, 22, 59, 59, tzinfo=datetime.UTC)
 
     start, end = evening_window(sample)
-    assert start == datetime.datetime(2024, 3, 6, 23, 0, tzinfo=datetime.timezone.utc)
-    assert end == datetime.datetime(2024, 3, 7, 22, 59, 59, tzinfo=datetime.timezone.utc)
+    assert start == datetime.datetime(2024, 3, 6, 23, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 7, 22, 59, 59, tzinfo=datetime.UTC)
 
     start, end = weekly_window(sample)
-    assert start == datetime.datetime(2024, 3, 3, 23, 0, tzinfo=datetime.timezone.utc)
-    assert end == datetime.datetime(2024, 3, 10, 22, 59, 59, tzinfo=datetime.timezone.utc)
+    assert start == datetime.datetime(2024, 3, 3, 23, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 10, 22, 59, 59, tzinfo=datetime.UTC)

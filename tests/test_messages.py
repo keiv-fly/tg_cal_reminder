@@ -1,6 +1,5 @@
-import pytest
 
-from tg_cal_reminder.i18n.messages import MESSAGES, get_message, DEFAULT_LANG
+from tg_cal_reminder.i18n.messages import DEFAULT_LANG, MESSAGES, get_message
 
 
 def test_messages_structure():

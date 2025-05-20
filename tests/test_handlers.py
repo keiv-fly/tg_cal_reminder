@@ -3,13 +3,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
-from tg_cal_reminder.db.models import Base, User
-from tg_cal_reminder.db import crud
 from tg_cal_reminder.bot import handlers
-
+from tg_cal_reminder.db import crud
+from tg_cal_reminder.db.models import Base, User
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
@@ -19,9 +18,13 @@ async def async_session():
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    async_session_factory = lambda: AsyncSession(engine, expire_on_commit=False)
+
+    async def async_session_factory():
+        return AsyncSession(engine, expire_on_commit=False)
+
     async with async_session_factory() as session:
         yield session
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
@@ -29,14 +32,13 @@ async def async_session():
 
 @pytest_asyncio.fixture
 async def user(async_session: AsyncSession) -> User:
-    usr = await crud.create_user(async_session, telegram_id=1, username="tester")
-    return usr
+    return await crud.create_user(async_session, telegram_id=1, username="tester")
 
 
 @pytest.mark.asyncio
 async def test_dispatch_direct_add_event(async_session: AsyncSession, user: User):
     translator = AsyncMock()
-    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+    now = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
     text = f"/add_event {now.strftime('%Y-%m-%d %H:%M')} Test"
 
     result = await handlers.dispatch(async_session, user, text, "en", translator)
@@ -61,14 +63,18 @@ async def test_dispatch_free_text_uses_translator(async_session: AsyncSession, u
 
 @pytest.mark.asyncio
 async def test_handle_list_and_close(async_session: AsyncSession, user: User):
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     event1 = await crud.create_event(async_session, user.id, now, "First")
-    event2 = await crud.create_event(async_session, user.id, now + datetime.timedelta(hours=1), "Second")
+    event2 = await crud.create_event(
+        async_session, user.id, now + datetime.timedelta(hours=1), "Second"
+    )
 
     list_text = await handlers.handle_list_events(handlers.CommandContext(async_session, user), "")
     assert str(event1.id) in list_text and str(event2.id) in list_text
 
-    close_result = await handlers.handle_close_event(handlers.CommandContext(async_session, user), str(event1.id))
+    close_result = await handlers.handle_close_event(
+        handlers.CommandContext(async_session, user), str(event1.id)
+    )
     assert "Closed" in close_result
 
     result = await async_session.execute(select(User))

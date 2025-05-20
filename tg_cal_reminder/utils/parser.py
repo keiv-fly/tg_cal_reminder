@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
-
 
 PARIS_TZ = ZoneInfo("Europe/Paris")
 
@@ -48,7 +47,7 @@ def parse_event_line(line: str, tzinfo: ZoneInfo = PARIS_TZ) -> tuple[datetime, 
     start_date = _parse_date(parts[0])
     start_time_part = _parse_time(parts[1])
     start_naive = datetime.combine(start_date.date(), start_time_part.time())
-    start = start_naive.replace(tzinfo=tzinfo).astimezone(timezone.utc)
+    start = start_naive.replace(tzinfo=tzinfo).astimezone(UTC)
 
     idx = 2
     end: datetime | None = None
@@ -56,7 +55,7 @@ def parse_event_line(line: str, tzinfo: ZoneInfo = PARIS_TZ) -> tuple[datetime, 
         end_date = _parse_date(parts[2])
         end_time_part = _parse_time(parts[3])
         end_naive = datetime.combine(end_date.date(), end_time_part.time())
-        end = end_naive.replace(tzinfo=tzinfo).astimezone(timezone.utc)
+        end = end_naive.replace(tzinfo=tzinfo).astimezone(UTC)
         idx = 4
 
     if len(parts) <= idx:

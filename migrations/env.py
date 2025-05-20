@@ -1,12 +1,12 @@
 import asyncio
 import os
 from logging.config import fileConfig
-
-from sqlalchemy import pool
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
+from dotenv import load_dotenv
 
 from alembic import context
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from tg_cal_reminder.db.models import Base
 
@@ -15,8 +15,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
-
-from dotenv import load_dotenv
 
 load_dotenv()
 

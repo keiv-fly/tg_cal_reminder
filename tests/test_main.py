@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from tg_cal_reminder import main as main_mod

@@ -1,12 +1,12 @@
 import datetime
+
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
-from tg_cal_reminder.db.models import Base, User, Event
-
+from tg_cal_reminder.db.models import Base, Event, User
 
 # Test database URL - use SQLite in-memory for tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -20,7 +20,8 @@ async def async_session():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    async_session_factory = lambda: AsyncSession(engine, expire_on_commit=False)
+    async def async_session_factory():
+        return AsyncSession(engine, expire_on_commit=False)
 
     async with async_session_factory() as session:
         yield session
@@ -105,7 +106,7 @@ async def test_event_model_creation(async_session):
     await async_session.commit()
 
     # Now create an event for this user
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     event = Event(user_id=user.id, start_time=now, title="Test Event")
 
     # Add to session and commit
@@ -135,7 +136,7 @@ async def test_event_with_end_time(async_session):
     await async_session.commit()
 
     # Now create an event with end_time
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     end = now + datetime.timedelta(hours=2)
     event = Event(user_id=user.id, start_time=now, end_time=end, title="Test Event with End Time")
 
@@ -162,7 +163,7 @@ async def test_user_events_relationship(async_session):
     await async_session.commit()
 
     # Create multiple events for the user
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     events = [
         Event(user_id=user.id, start_time=now, title="Event 1"),
         Event(user_id=user.id, start_time=now + datetime.timedelta(days=1), title="Event 2"),
@@ -199,7 +200,7 @@ async def test_cascade_delete(async_session):
     await async_session.commit()
 
     # Create events for the user
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     events = [
         Event(user_id=user.id, start_time=now, title="Event 1"),
         Event(user_id=user.id, start_time=now + datetime.timedelta(days=1), title="Event 2"),
@@ -229,7 +230,7 @@ async def test_event_is_closed_attribute(async_session):
     await async_session.commit()
 
     # Create event
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     event = Event(user_id=user.id, start_time=now, title="Test Event")
 
     async_session.add(event)
@@ -255,7 +256,7 @@ async def test_repr_methods(async_session):
     async_session.add(user)
     await async_session.commit()
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     event = Event(user_id=user.id, start_time=now, title="Test Event")
 
     async_session.add(event)

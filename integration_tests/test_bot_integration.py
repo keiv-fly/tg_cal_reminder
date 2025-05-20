@@ -1,16 +1,16 @@
+import os
+
 import httpx
 import pytest
 import pytest_asyncio
 import respx
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-import os
 
 from tg_cal_reminder.bot.polling import Poller
 from tg_cal_reminder.bot.update import handle_update
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import Base, User
-
-from dotenv import load_dotenv
 
 load_dotenv()
 

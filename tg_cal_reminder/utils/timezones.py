@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 PARIS = ZoneInfo("Europe/Paris")
-UTC = timezone.utc
+UTC = UTC
 
 
 def to_utc(dt: datetime) -> datetime:

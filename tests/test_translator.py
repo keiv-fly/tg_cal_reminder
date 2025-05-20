@@ -1,8 +1,9 @@
 import json
-import pytest
-import httpx
 
-from tg_cal_reminder.llm.translator import SYSTEM_PROMPT, OPENROUTER_URL, translate_message
+import httpx
+import pytest
+
+from tg_cal_reminder.llm.translator import OPENROUTER_URL, SYSTEM_PROMPT, translate_message
 
 
 @pytest.mark.asyncio

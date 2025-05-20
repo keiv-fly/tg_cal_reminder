@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 from httpx import HTTPError
@@ -20,7 +20,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 async def translate_message(
     client: httpx.AsyncClient, text: str, language_code: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Translate a free-form message into a bot command via OpenRouter."""
     payload = {
         "model": "openrouter/auto",
