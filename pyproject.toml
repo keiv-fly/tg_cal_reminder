@@ -39,6 +39,7 @@ dependencies = [
     "coverage==7.8.0",         # Code coverage
     "typing-inspection==0.4.0", # Additional typing tools
     "aiosqlite==0.21.0",       # SQLite async driver
+    "psycopg2-binary==2.9.10", # PostgreSQL driver
 ]
 
 [tool.ruff]
