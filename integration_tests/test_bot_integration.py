@@ -2,6 +2,7 @@ import httpx
 import pytest
 import respx
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+import os
 
 from tg_cal_reminder.bot.polling import Poller
 from tg_cal_reminder.bot.update import handle_update
@@ -25,7 +26,13 @@ UPDATE = {
 
 
 @pytest.fixture(scope="session")
-def db_url() -> str:
+def integration_enabled():
+    if not os.environ.get("RUN_INTEGRATION_TESTS"):
+        pytest.skip("integration tests disabled", allow_module_level=True)
+
+
+@pytest.fixture(scope="session")
+def db_url(integration_enabled) -> str:
     return "sqlite+aiosqlite:///:memory:"
 
 
@@ -42,7 +49,7 @@ async def session_factory(db_url):
 
 
 @pytest.fixture
-def telegram_mock():
+def telegram_mock(integration_enabled):
     with respx.mock(assert_all_called=False) as mock:
         mock.get("https://api.telegram.org/botTEST_TOKEN/getUpdates").respond(
             json=UPDATE, status_code=200
