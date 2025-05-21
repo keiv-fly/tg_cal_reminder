@@ -5,6 +5,8 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import User
 
@@ -23,7 +25,7 @@ class HandlerError(Exception):
 
 @dataclass
 class CommandContext:
-    session: Awaitable
+    session: AsyncSession
     user: User
 
 
@@ -100,7 +102,7 @@ _HANDLERS: dict[str, CommandHandler] = {
 
 
 async def dispatch(
-    session: Awaitable,
+    session: AsyncSession,
     user: User,
     text: str,
     language_code: str,

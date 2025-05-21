@@ -66,6 +66,15 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unused_ignores = true
 warn_unused_configs = true
+exclude = "(tests|integration_tests)"
+
+[[tool.mypy.overrides]]
+module = ["apscheduler.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*", "integration_tests.*"]
+disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

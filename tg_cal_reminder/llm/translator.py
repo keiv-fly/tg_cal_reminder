@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from httpx import HTTPError
@@ -48,6 +48,6 @@ async def translate_message(
         raise ValueError("Invalid LLM response") from exc
 
     try:
-        return json.loads(content)
+        return cast(dict[str, Any], json.loads(content))
     except json.JSONDecodeError as exc:
         raise ValueError("Invalid JSON returned by LLM") from exc

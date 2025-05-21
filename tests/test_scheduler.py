@@ -10,20 +10,20 @@ from tg_cal_reminder.bot.scheduler import (
 )
 
 
-def test_create_scheduler_jobs():
+def test_create_scheduler_jobs() -> None:
     scheduler = create_scheduler()
     job_ids = {job.id for job in scheduler.get_jobs()}
     assert job_ids == {"morning_digest", "evening_digest", "weekly_digest"}
 
     morning = scheduler.get_job("morning_digest")
     assert isinstance(morning.trigger, CronTrigger)
-    assert str(morning.trigger.fields[5].expressions[0]) == "8"
+    assert str(morning.trigger.fields[5].expressions[0]) == "6"
     assert str(morning.trigger.fields[6].expressions[0]) == "0"
     assert morning.trigger.timezone == datetime.UTC
 
     evening = scheduler.get_job("evening_digest")
     assert isinstance(evening.trigger, CronTrigger)
-    assert str(evening.trigger.fields[5].expressions[0]) == "19"
+    assert str(evening.trigger.fields[5].expressions[0]) == "17"
     assert str(evening.trigger.fields[6].expressions[0]) == "0"
 
     weekly = scheduler.get_job("weekly_digest")
@@ -31,17 +31,17 @@ def test_create_scheduler_jobs():
     assert str(weekly.trigger.fields[4].expressions[0]) == "mon"
 
 
-def test_digest_time_windows():
+def test_digest_time_windows() -> None:
     sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=datetime.UTC)
 
     start, end = morning_window(sample)
-    assert start == datetime.datetime(2024, 3, 5, 23, 0, tzinfo=datetime.UTC)
-    assert end == datetime.datetime(2024, 3, 6, 22, 59, 59, tzinfo=datetime.UTC)
+    assert start == datetime.datetime(2024, 3, 6, 0, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 6, 23, 59, 59, tzinfo=datetime.UTC)
 
     start, end = evening_window(sample)
-    assert start == datetime.datetime(2024, 3, 6, 23, 0, tzinfo=datetime.UTC)
-    assert end == datetime.datetime(2024, 3, 7, 22, 59, 59, tzinfo=datetime.UTC)
+    assert start == datetime.datetime(2024, 3, 7, 0, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 7, 23, 59, 59, tzinfo=datetime.UTC)
 
     start, end = weekly_window(sample)
-    assert start == datetime.datetime(2024, 3, 3, 23, 0, tzinfo=datetime.UTC)
-    assert end == datetime.datetime(2024, 3, 10, 22, 59, 59, tzinfo=datetime.UTC)
+    assert start == datetime.datetime(2024, 3, 4, 0, 0, tzinfo=datetime.UTC)
+    assert end == datetime.datetime(2024, 3, 10, 23, 59, 59, tzinfo=datetime.UTC)
