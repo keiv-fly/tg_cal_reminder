@@ -47,7 +47,7 @@ jobs:
       - name: Install Hatch
         run: pip install hatchling hatch
       - name: Install project dependencies
-        run: hatch env create --no-build
+        run: hatch env create
       - name: Run tests
         run: hatch run test
       - name: Run integration tests
