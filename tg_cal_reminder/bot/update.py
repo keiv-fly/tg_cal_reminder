@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from typing import Any
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 import httpx
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from tg_cal_reminder.bot import handlers
 from tg_cal_reminder.db import crud
