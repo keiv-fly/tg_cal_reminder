@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-import asyncio
+from collections.abc import Awaitable, Callable
+from typing import Any
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 import httpx
 
@@ -11,8 +13,8 @@ from tg_cal_reminder.db import crud
 async def handle_update(
     update: dict,
     tg_client: httpx.AsyncClient,
-    session_factory: asyncio.coroutines.coroutine,
-    translator,
+    session_factory: async_sessionmaker[AsyncSession],
+    translator: Callable[[str, str], Awaitable[dict[str, Any]]],
 ) -> None:
     """Process a single Telegram update."""
     message = update.get("message")
