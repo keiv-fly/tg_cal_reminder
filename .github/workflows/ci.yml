@@ -37,18 +37,18 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
-    needs: typecheck        # ensure lint+typecheck pass first
+    needs: typecheck
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install Hatch
-        run: pip install hatchling hatch
-      - name: Install project dependencies
-        run: hatch env create
-      - name: Run tests
-        run: hatch run test
+      - name: Install project and test dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-asyncio pytest-cov respx
+      - name: Run unit tests
+        run: pytest --cov=tg_cal_reminder
       - name: Run integration tests
-        run: hatch run integration         
+        run: pytest integration_tests --cov=tg_cal_reminder         
