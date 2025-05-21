@@ -10,7 +10,7 @@ from tg_cal_reminder.bot.scheduler import (
 )
 
 
-def test_create_scheduler_jobs():
+def test_create_scheduler_jobs() -> None:
     scheduler = create_scheduler()
     job_ids = {job.id for job in scheduler.get_jobs()}
     assert job_ids == {"morning_digest", "evening_digest", "weekly_digest"}
@@ -31,7 +31,7 @@ def test_create_scheduler_jobs():
     assert str(weekly.trigger.fields[4].expressions[0]) == "mon"
 
 
-def test_digest_time_windows():
+def test_digest_time_windows() -> None:
     sample = datetime.datetime(2024, 3, 6, 12, 0, tzinfo=datetime.UTC)
 
     start, end = morning_window(sample)
