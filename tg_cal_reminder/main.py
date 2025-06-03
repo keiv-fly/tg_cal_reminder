@@ -3,6 +3,8 @@ import logging
 import os
 
 import httpx
+from alembic import command
+from alembic.config import Config
 from dotenv import load_dotenv
 
 from tg_cal_reminder.bot import scheduler
@@ -24,6 +26,11 @@ async def main() -> None:
 
     engine = get_engine()
     session_factory = get_sessionmaker(engine)
+
+    # Run migrations to ensure the database schema is up to date.
+    # Alembic's upgrade command uses ``asyncio.run`` internally which would
+    # block the running event loop, so run it in a separate thread instead.
+    await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
 
     async with (
         httpx.AsyncClient(base_url=f"https://api.telegram.org/bot{token}/") as tg_client,
