@@ -1,0 +1,1 @@
+worker: python tg_cal_reminder/main.py
