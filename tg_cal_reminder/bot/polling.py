@@ -36,7 +36,11 @@ class Poller:
         params = {"timeout": self.timeout}
         if self.offset is not None:
             params["offset"] = self.offset
-        response = await self.client.get("getUpdates", params=params)
+        # Use a network timeout that exceeds the long polling timeout to avoid
+        # `httpx.ReadTimeout` errors while waiting for Telegram to respond.
+        response = await self.client.get(
+            "getUpdates", params=params, timeout=self.timeout + 5
+        )
         response.raise_for_status()
         payload = response.json()
         if not payload.get("ok", False):
