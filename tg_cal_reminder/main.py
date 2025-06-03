@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 async def main() -> None:
+    print("Starting bot...")
     load_dotenv()
     token = os.environ.get("BOT_TOKEN")
     if not token:
@@ -24,9 +25,11 @@ async def main() -> None:
     engine = get_engine()
     session_factory = get_sessionmaker(engine)
 
-    async with httpx.AsyncClient(
-        base_url=f"https://api.telegram.org/bot{token}/"
-    ) as tg_client, httpx.AsyncClient() as llm_client:
+    async with (
+        httpx.AsyncClient(base_url=f"https://api.telegram.org/bot{token}/") as tg_client,
+        httpx.AsyncClient() as llm_client,
+    ):
+
         async def translator(text: str, lang: str) -> dict:
             return await translate_message(llm_client, text, lang)
 
@@ -38,8 +41,10 @@ async def main() -> None:
         sched = scheduler.create_scheduler()
         sched.start()
         try:
+            print("Bot is now polling for updates...")
             await poller.run()
         finally:
+            print("Shutting down bot...")
             sched.shutdown()
 
 
