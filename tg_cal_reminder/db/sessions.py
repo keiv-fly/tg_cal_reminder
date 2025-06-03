@@ -18,9 +18,9 @@ load_dotenv()
 def get_engine(database_url: str | None = None) -> AsyncEngine:
     """Return a new ``AsyncEngine`` using ``database_url`` or ``DATABASE_URL`` env."""
     url = database_url or os.getenv("DATABASE_URL")
-    url = url.replace("postgres://", "postgresql+asyncpg://", 1)
     if not url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
+    url = url.replace("postgres://", "postgresql+asyncpg://", 1)
     return create_async_engine(url, echo=False)
 
 
