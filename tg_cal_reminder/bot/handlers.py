@@ -5,6 +5,7 @@ import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+import textwrap
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +16,7 @@ from tg_cal_reminder.db.models import User
 def get_secret() -> str:
     """Return the secret word from environment."""
     return os.environ.get("BOT_SECRET", "open-sesame")
+
 
 _EVENT_RE = re.compile(
     r"^(?P<start>\d{4}-\d{2}-\d{2} \d{2}:\d{2})"
@@ -87,10 +89,20 @@ async def handle_close_event(ctx: CommandContext, args: str) -> str:
 
 
 async def handle_help(ctx: CommandContext, args: str) -> str:
-    return (
-        "/start, /lang <code>, /add_event <event>, /list_events [username], "
-        "/close_event <id ...>, /help"
-    )
+    return textwrap.dedent(
+        """
+        /start
+        /lang <code>
+        /add_event <YYYY-MM-DD HH:mm [YYYY-MM-DD HH:mm] title>
+            Required: start date/time and title
+            Optional: end date/time in brackets
+            Example: /add_event 2024-05-17 14:30 Team meeting
+            Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
+        /list_events [username]
+        /close_event <id>
+        /help
+        """
+    ).strip()
 
 
 CommandHandler = Callable[[CommandContext, str], Awaitable[str]]
