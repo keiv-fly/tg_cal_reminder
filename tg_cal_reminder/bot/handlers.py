@@ -48,7 +48,7 @@ async def parse_event_line(event_line: str) -> tuple[datetime, datetime | None, 
 
 
 async def handle_start(ctx: CommandContext, args: str) -> str:
-    return "Please provide secret"
+    return "Please provide a secret"
 
 
 async def handle_lang(ctx: CommandContext, args: str) -> str:
@@ -119,8 +119,8 @@ async def dispatch(
             await crud.authorize_user(session, user)
             return 'Please write your preferred language using command "/lang en"'
         if text.startswith("/start"):
-            return "Please provide secret"
-        return "Please provide a secret"
+            return "Please provide a secret"
+        return "The secret is wrong. Please provide a secret"
 
     if text.startswith("/"):
         command, _, args = text.partition(" ")

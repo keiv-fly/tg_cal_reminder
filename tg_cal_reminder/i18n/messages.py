@@ -6,7 +6,7 @@ DEFAULT_LANG = "en"
 
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
-        "secret_prompt": "Please provide secret",
+        "secret_prompt": "Please provide a secret",
         "language_prompt": "Send /lang <code> to choose your language.",
         "language_set": "Language changed to {language}.",
         "help": (
