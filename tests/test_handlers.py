@@ -103,11 +103,11 @@ async def test_secret_flow(async_session: AsyncSession, monkeypatch):
 
     # /start prompts for secret
     reply = await handlers.dispatch(async_session, user, "/start", "en")
-    assert reply == "Please provide secret"
+    assert reply == "Please provide a secret"
 
     # wrong secret
     reply = await handlers.dispatch(async_session, user, "wrong", "en")
-    assert reply == "Please provide a secret"
+    assert reply == "The secret is wrong. Please provide a secret"
 
     # correct secret authorizes user
     reply = await handlers.dispatch(async_session, user, "topsecret", "en")
