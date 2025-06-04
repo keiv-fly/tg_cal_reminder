@@ -19,11 +19,13 @@ target_metadata = Base.metadata
 load_dotenv()
 
 
-def get_url() -> str:
-    url = os.getenv("DATABASE_URL")
+def get_url(database_url: str | None = None) -> str:
+    """Return a database URL using ``database_url`` or ``DATABASE_URL`` env."""
+
+    url = database_url or os.getenv("DATABASE_URL")
     if not url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
-    return url
+    return url.replace("postgres://", "postgresql+asyncpg://", 1)
 
 
 def run_migrations_offline() -> None:
