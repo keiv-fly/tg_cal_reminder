@@ -32,7 +32,9 @@ async def async_session():
 
 @pytest_asyncio.fixture
 async def user(async_session: AsyncSession) -> User:
-    return await crud.create_user(async_session, telegram_id=1, username="tester")
+    return await crud.create_user(
+        async_session, telegram_id=1, username="tester", is_authorized=True
+    )
 
 
 @pytest.mark.asyncio
@@ -90,3 +92,26 @@ async def test_handle_list_and_close(async_session: AsyncSession, user: User):
 async def test_parse_event_line_errors():
     with pytest.raises(handlers.HandlerError):
         await handlers.parse_event_line("invalid event")
+
+
+@pytest.mark.asyncio
+async def test_secret_flow(async_session: AsyncSession, monkeypatch):
+    monkeypatch.setenv("BOT_SECRET", "topsecret")
+    user = await crud.create_user(async_session, telegram_id=99, is_authorized=False)
+
+    assert not user.is_authorized
+
+    # /start prompts for secret
+    reply = await handlers.dispatch(async_session, user, "/start", "en")
+    assert reply == "Please provide secret"
+
+    # wrong secret
+    reply = await handlers.dispatch(async_session, user, "wrong", "en")
+    assert reply == "Please provide a secret"
+
+    # correct secret authorizes user
+    reply = await handlers.dispatch(async_session, user, "topsecret", "en")
+    assert reply == 'Please write your preferred language using command "/lang en"'
+
+    refreshed = await crud.get_user_by_telegram_id(async_session, 99)
+    assert refreshed is not None and refreshed.is_authorized is True

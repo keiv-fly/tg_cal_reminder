@@ -6,7 +6,7 @@ DEFAULT_LANG = "en"
 
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
-        "secret_prompt": "Please reply with the secret word to continue.",
+        "secret_prompt": "Please provide secret",
         "language_prompt": "Send /lang <code> to choose your language.",
         "language_set": "Language changed to {language}.",
         "help": (
@@ -18,7 +18,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "unknown_command": "Unknown command. Send /help for usage.",
     },
     "fr": {
-        "secret_prompt": "Veuillez répondre avec le mot secret pour continuer.",
+        "secret_prompt": "Veuillez fournir le secret",
         "language_prompt": "Envoyez /lang <code> pour choisir votre langue.",
         "language_set": "La langue a été définie sur {language}.",
         "help": (
@@ -30,7 +30,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         # Intentionally omit 'unknown_command' to test fallback
     },
     "ru": {
-        "secret_prompt": "Пожалуйста, ответьте секретным словом, чтобы продолжить.",
+        "secret_prompt": "Пожалуйста, отправьте секретное слово",
         "language_prompt": "Отправьте /lang <code> чтобы выбрать язык.",
         "language_set": "Язык изменен на {language}.",
         "help": (

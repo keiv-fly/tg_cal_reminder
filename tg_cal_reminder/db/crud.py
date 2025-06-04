@@ -16,9 +16,15 @@ async def create_user(
     telegram_id: int,
     username: str | None = None,
     language: str = "en",
+    is_authorized: bool = False,
 ) -> User:
     """Create and return a new ``User`` record."""
-    user = User(telegram_id=telegram_id, username=username, language=language)
+    user = User(
+        telegram_id=telegram_id,
+        username=username,
+        language=language,
+        is_authorized=is_authorized,
+    )
     session.add(user)
     await session.commit()
     await session.refresh(user)
@@ -34,6 +40,14 @@ async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int) -> Us
 async def update_user_language(session: AsyncSession, user: User, language: str) -> User:
     """Update a user's language preference."""
     user.language = language
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+
+async def authorize_user(session: AsyncSession, user: User) -> User:
+    """Mark ``user`` as authorized."""
+    user.is_authorized = True
     await session.commit()
     await session.refresh(user)
     return user

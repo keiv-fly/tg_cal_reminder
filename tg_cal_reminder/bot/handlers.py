@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -10,7 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import User
 
-SECRET_WORD = "open-sesame"
+
+def get_secret() -> str:
+    """Return the secret word from environment."""
+    return os.environ.get("BOT_SECRET", "open-sesame")
 
 _EVENT_RE = re.compile(
     r"^(?P<start>\d{4}-\d{2}-\d{2} \d{2}:\d{2})"
@@ -44,7 +48,7 @@ async def parse_event_line(event_line: str) -> tuple[datetime, datetime | None, 
 
 
 async def handle_start(ctx: CommandContext, args: str) -> str:
-    return SECRET_WORD
+    return "Please provide secret"
 
 
 async def handle_lang(ctx: CommandContext, args: str) -> str:
@@ -109,6 +113,14 @@ async def dispatch(
     translator: Callable[[str, str], Awaitable[dict]] | None = None,
 ) -> str:
     ctx = CommandContext(session=session, user=user)
+
+    if not user.is_authorized:
+        if text == get_secret():
+            await crud.authorize_user(session, user)
+            return 'Please write your preferred language using command "/lang en"'
+        if text.startswith("/start"):
+            return "Please provide secret"
+        return "Please provide a secret"
 
     if text.startswith("/"):
         command, _, args = text.partition(" ")
