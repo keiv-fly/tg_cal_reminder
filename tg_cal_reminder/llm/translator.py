@@ -1,28 +1,28 @@
 import json
 import os
-from typing import Any, cast
-from datetime import datetime
-import pytz
 import textwrap
+from datetime import datetime
+from typing import Any, cast
 
 import httpx
+import pytz  # type: ignore[import-untyped]
 from httpx import HTTPError
 
 
-def get_current_time_plus3():
+def get_current_time_plus3() -> str:
     tz = pytz.timezone("Etc/GMT-3")  # GMT-3 is the same as +3:00
     return datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 SYSTEM_PROMPT = textwrap.dedent(
     f"""
-    You are a translation layer for a Telegram bot. 
-    Current time: {get_current_time_plus3()}. 
-    Translate the user message into one of the supported commands: 
-    /start, /lang <code>, /add_event <event_line>, /list_events [username], 
-    /close_event <id …>, /help. 
-    Return a JSON object in English like {"command": "/help", "args": ""}. 
-    If the text does not map to a known command, return {"error": "Unrecognized"}. 
+    You are a translation layer for a Telegram bot.
+    Current time: {get_current_time_plus3()}.
+    Translate the user message into one of the supported commands:
+    /start, /lang <code>, /add_event <event_line>, /list_events [username],
+    /close_event <id …>, /help.
+    Return a JSON object in English like {{"command": "/help", "args": ""}}.
+    If the text does not map to a known command, return {{"error": "Unrecognized"}}.
     Never invent new commands
 
     Here is the help description of all commands:
