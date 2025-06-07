@@ -12,6 +12,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "help": (
             "/add_event <event_line> – add event\n"
             "/list_events [username] – list events\n"
+            "/list_all_events [from to] – list events in range\n"
             "/close_event <id …> – close events\n"
             "/lang <code> – change language"
         ),
@@ -24,6 +25,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "help": (
             "/add_event <ligne> – ajouter un événement\n"
             "/list_events [utilisateur] – lister les événements\n"
+            "/list_all_events [from to] – lister la plage\n"
             "/close_event <id …> – clôturer des événements\n"
             "/lang <code> – changer de langue"
         ),
@@ -36,6 +38,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "help": (
             "/add_event <событие> – добавить событие\n"
             "/list_events [пользователь] – список событий\n"
+            "/list_all_events [from to] – события в диапазоне\n"
             "/close_event <id …> – закрыть события\n"
             "/lang <code> – изменить язык"
         ),

@@ -90,6 +90,14 @@ async def test_event_operations(async_session: AsyncSession):
     )
     assert [e.id for e in between] == [e1.id]
 
+    ranged = await crud.list_events_between(
+        async_session,
+        user.id,
+        now + datetime.timedelta(minutes=30),
+        now + datetime.timedelta(hours=3),
+    )
+    assert [e.id for e in ranged] == [e3.id, e2.id]
+
 
 @pytest.mark.asyncio
 async def test_close_events_empty_and_cross_user(async_session: AsyncSession):
