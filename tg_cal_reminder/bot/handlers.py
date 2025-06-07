@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import User
+from tg_cal_reminder.utils.timezones import to_paris
 
 
 def get_secret() -> str:
@@ -100,13 +101,38 @@ async def handle_list_all_events(ctx: CommandContext, args: str) -> str:
     return "\n".join(lines)
 
 
+def _date_label(dt: datetime, now: datetime) -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    local = to_paris(dt)
+    today = to_paris(now).date()
+    diff = (local.date() - today).days
+    if diff == 0:
+        return "Today"
+    if diff == 1:
+        return "Tomorrow"
+    if 0 < diff < 6:
+        return local.strftime("%a")
+    return local.strftime("%Y-%m-%d")
+
+
 async def handle_list_events(ctx: CommandContext, args: str) -> str:
     events = await crud.list_events(ctx.session, ctx.user.id, include_closed=False)
-    lines = []
+    now = datetime.now(UTC)
+    lines: list[str] = []
+    current_label = None
     for ev in events:
-        end = ev.end_time.isoformat() if ev.end_time else "-"
-        status = "closed" if ev.is_closed else "open"
-        lines.append(f"{ev.id} {ev.start_time.isoformat()} {end} {ev.title} [{status}]")
+        label = _date_label(ev.start_time, now)
+        if label != current_label:
+            lines.append(f"{label}:")
+            current_label = label
+        dt = ev.start_time
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=UTC)
+        time_str = to_paris(dt).strftime("%H:%M")
+        lines.append(f"{time_str} {ev.title} | id={ev.id}")
     return "\n".join(lines)
 
 
