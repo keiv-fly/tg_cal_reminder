@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import os
 import re
+import textwrap
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
-import textwrap
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
