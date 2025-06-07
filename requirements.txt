@@ -95,6 +95,7 @@ pytest-cov==6.1.1
     # via tg_cal_reminder (pyproject.toml)
 python-dotenv==1.1.0
     # via tg_cal_reminder (pyproject.toml)
+pytz==2025.2
 respx==0.22.0
     # via tg_cal_reminder (pyproject.toml)
 ruff==0.11.10
