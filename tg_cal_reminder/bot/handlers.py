@@ -71,7 +71,7 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
 
 
 async def handle_list_events(ctx: CommandContext, args: str) -> str:
-    events = await crud.list_events(ctx.session, ctx.user.id)
+    events = await crud.list_events(ctx.session, ctx.user.id, include_closed=False)
     lines = []
     for ev in events:
         end = ev.end_time.isoformat() if ev.end_time else "-"

@@ -79,6 +79,13 @@ async def test_handle_list_and_close(async_session: AsyncSession, user: User):
     )
     assert "Closed" in close_result
 
+    list_text_after_close = await handlers.handle_list_events(
+        handlers.CommandContext(async_session, user), ""
+    )
+    lines = list_text_after_close.splitlines()
+    assert not any(line.startswith(f"{event1.id} ") for line in lines)
+    assert any(line.startswith(f"{event2.id} ") for line in lines)
+
     result = await async_session.execute(select(User))
     assert result.scalar_one()
 
