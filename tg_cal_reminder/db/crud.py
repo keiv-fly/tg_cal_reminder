@@ -121,3 +121,20 @@ async def get_events_between(
     )
     result = await session.execute(stmt)
     return list(result.scalars())
+
+
+async def list_events_between(
+    session: AsyncSession,
+    user_id: int,
+    start: datetime | None = None,
+    end: datetime | None = None,
+) -> list[Event]:
+    """Return events for ``user_id`` filtered by optional date range."""
+    stmt = select(Event).where(Event.user_id == user_id)
+    if start is not None:
+        stmt = stmt.where(Event.start_time >= start)
+    if end is not None:
+        stmt = stmt.where(Event.start_time <= end)
+    stmt = stmt.order_by(Event.is_closed, Event.start_time)
+    result = await session.execute(stmt)
+    return list(result.scalars())

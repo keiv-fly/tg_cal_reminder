@@ -70,6 +70,36 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
     return f"Event {event.id} added{warning}"
 
 
+def _parse_range(args: str) -> tuple[datetime | None, datetime | None]:
+    parts = args.split()
+    if not parts:
+        return None, None
+    if len(parts) not in (2, 4):
+        raise HandlerError("Invalid range format")
+    try:
+        start = datetime.fromisoformat(" ".join(parts[0:2])).replace(tzinfo=UTC)
+    except ValueError as exc:
+        raise HandlerError("Invalid from datetime") from exc
+    end = None
+    if len(parts) == 4:
+        try:
+            end = datetime.fromisoformat(" ".join(parts[2:4])).replace(tzinfo=UTC)
+        except ValueError as exc:
+            raise HandlerError("Invalid to datetime") from exc
+    return start, end
+
+
+async def handle_list_all_events(ctx: CommandContext, args: str) -> str:
+    start, end = _parse_range(args)
+    events = await crud.list_events_between(ctx.session, ctx.user.id, start, end)
+    lines = []
+    for ev in events:
+        end_str = ev.end_time.isoformat() if ev.end_time else "-"
+        status = "closed" if ev.is_closed else "open"
+        lines.append(f"{ev.id} {ev.start_time.isoformat()} {end_str} {ev.title} [{status}]")
+    return "\n".join(lines)
+
+
 async def handle_list_events(ctx: CommandContext, args: str) -> str:
     events = await crud.list_events(ctx.session, ctx.user.id)
     lines = []
@@ -99,6 +129,7 @@ async def handle_help(ctx: CommandContext, args: str) -> str:
             Example: /add_event 2024-05-17 14:30 Team meeting
             Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
         /list_events [username]
+        /list_all_events [from to]
         /close_event <id>
         /help
         """
@@ -112,6 +143,7 @@ _HANDLERS: dict[str, CommandHandler] = {
     "/lang": handle_lang,
     "/add_event": handle_add_event,
     "/list_events": handle_list_events,
+    "/list_all_events": handle_list_all_events,
     "/close_event": handle_close_event,
     "/help": handle_help,
 }

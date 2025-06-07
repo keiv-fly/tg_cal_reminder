@@ -89,6 +89,25 @@ async def test_handle_list_and_close(async_session: AsyncSession, user: User):
 
 
 @pytest.mark.asyncio
+async def test_handle_list_all_events(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC)
+    event1 = await crud.create_event(async_session, user.id, now, "A")
+    event2 = await crud.create_event(
+        async_session, user.id, now + datetime.timedelta(hours=2), "B"
+    )
+
+    ctx = handlers.CommandContext(async_session, user)
+    all_text = await handlers.handle_list_all_events(ctx, "")
+    assert str(event1.id) in all_text and str(event2.id) in all_text
+
+    start = (now + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")
+    end = (now + datetime.timedelta(hours=3)).strftime("%Y-%m-%d %H:%M")
+    filtered = await handlers.handle_list_all_events(ctx, f"{start} {end}")
+    filtered_ids = {line.split()[0] for line in filtered.splitlines()}
+    assert str(event1.id) not in filtered_ids and str(event2.id) in filtered_ids
+
+
+@pytest.mark.asyncio
 async def test_parse_event_line_errors():
     with pytest.raises(handlers.HandlerError):
         await handlers.parse_event_line("invalid event")

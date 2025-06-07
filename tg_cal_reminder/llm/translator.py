@@ -20,7 +20,7 @@ SYSTEM_PROMPT = textwrap.dedent(
     Current time: {get_current_time_plus3()}.
     Translate the user message into one of the supported commands:
     /start, /lang <code>, /add_event <event_line>, /list_events [username],
-    /close_event <id …>, /help.
+    /list_all_events [from to], /close_event <id …>, /help.
     Return a JSON object in English like {{"command": "/help", "args": ""}}.
     If the text does not map to a known command, return {{"error": "Unrecognized"}}.
     Never invent new commands
@@ -34,6 +34,7 @@ SYSTEM_PROMPT = textwrap.dedent(
             Example: /add_event 2024-05-17 14:30 Team meeting
             Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
         /list_events [username]
+        /list_all_events [from to]
         /close_event <id>
         /help
     """.strip()
