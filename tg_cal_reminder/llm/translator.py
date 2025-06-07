@@ -40,7 +40,8 @@ SYSTEM_PROMPT = textwrap.dedent(
         error: Literal["Unrecognized"] | None = None
     ```
     If the text does not map to a known command, return {{"error": "Unrecognized"}}.
-    The answer should not contain any other text than the JSON object. The JSON object should begin with `{{` and end with `}}`.
+    The answer should not contain any other text than the JSON object.
+    The JSON object should begin with `{{` and end with `}}`.
 
     Here is the help description of all commands:
         /start
