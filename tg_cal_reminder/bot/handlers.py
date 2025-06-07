@@ -206,7 +206,8 @@ async def dispatch(
         if "error" in result:
             raise HandlerError(result["error"])
         command = result.get("command", "")
-        args = result.get("args", "")
+        raw_args = result.get("args")
+        args = " ".join(raw_args) if isinstance(raw_args, list) else raw_args or ""
     handler = _HANDLERS.get(command)
     if not handler:
         raise HandlerError("Unknown command")

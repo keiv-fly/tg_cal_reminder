@@ -55,7 +55,7 @@ async def test_dispatch_direct_add_event(async_session: AsyncSession, user: User
 
 @pytest.mark.asyncio
 async def test_dispatch_free_text_uses_translator(async_session: AsyncSession, user: User):
-    translator = AsyncMock(return_value={"command": "/help", "args": ""})
+    translator = AsyncMock(return_value={"command": "/help", "args": []})
 
     result = await handlers.dispatch(async_session, user, "what can you do?", "en", translator)
 

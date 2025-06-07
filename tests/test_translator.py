@@ -9,7 +9,7 @@ from tg_cal_reminder.llm.translator import OPENROUTER_URL, SYSTEM_PROMPT, transl
 @pytest.mark.asyncio
 async def test_translate_message_success(monkeypatch):
     """Translator returns parsed JSON from LLM on success."""
-    expected = {"command": "/help", "args": ""}
+    expected = {"command": "/help", "args": []}
 
     async def handler(request: httpx.Request) -> httpx.Response:
         assert request.url == httpx.URL(OPENROUTER_URL)
