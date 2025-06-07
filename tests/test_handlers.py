@@ -82,9 +82,8 @@ async def test_handle_list_and_close(async_session: AsyncSession, user: User):
     list_text_after_close = await handlers.handle_list_events(
         handlers.CommandContext(async_session, user), ""
     )
-    lines = list_text_after_close.splitlines()
-    assert not any(line.startswith(f"{event1.id} ") for line in lines)
-    assert any(line.startswith(f"{event2.id} ") for line in lines)
+    assert f"id={event1.id}" not in list_text_after_close
+    assert f"id={event2.id}" in list_text_after_close
 
     result = await async_session.execute(select(User))
     assert result.scalar_one()
@@ -141,3 +140,52 @@ async def test_secret_flow(async_session: AsyncSession, monkeypatch):
 
     refreshed = await crud.get_user_by_telegram_id(async_session, 99)
     assert refreshed is not None and refreshed.is_authorized is True
+
+
+@pytest.mark.asyncio
+async def test_handle_list_events_grouping(
+    async_session: AsyncSession, user: User, monkeypatch
+) -> None:
+    now = datetime.datetime(2025, 6, 1, 12, 0, tzinfo=datetime.UTC)
+
+    class FixedDateTime(datetime.datetime):
+        @classmethod
+        def now(cls, tz: datetime.tzinfo | None = None) -> "FixedDateTime":
+            return cls.fromtimestamp(now.timestamp(), tz or now.tzinfo)
+
+    monkeypatch.setattr(handlers, "datetime", FixedDateTime)
+
+    e1 = await crud.create_event(
+        async_session,
+        user.id,
+        now + datetime.timedelta(hours=1),
+        "First",
+    )
+    e2 = await crud.create_event(
+        async_session,
+        user.id,
+        now + datetime.timedelta(days=1, hours=2),
+        "Second",
+    )
+    e3 = await crud.create_event(
+        async_session,
+        user.id,
+        now + datetime.timedelta(days=5, hours=3),
+        "Third",
+    )
+    e4 = await crud.create_event(
+        async_session,
+        user.id,
+        now + datetime.timedelta(days=7, hours=4),
+        "Fourth",
+    )
+
+    ctx = handlers.CommandContext(async_session, user)
+    text = await handlers.handle_list_events(ctx, "")
+
+    assert "Today:" in text
+    assert "Tomorrow:" in text
+    assert "Fri:" in text
+    assert "2025-06-08:" in text
+    for ev in (e1, e2, e3, e4):
+        assert f"id={ev.id}" in text
