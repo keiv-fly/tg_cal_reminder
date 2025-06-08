@@ -46,11 +46,15 @@ async def test_dispatch_direct_add_event(async_session: AsyncSession, user: User
     result = await handlers.dispatch(async_session, user, text, "en", translator)
 
     assert translator.call_count == 0
-    assert result.startswith("Event ")
-
     events = await crud.list_events(async_session, user.id)
     assert len(events) == 1
-    assert events[0].title == "Test"
+    ev = events[0]
+    expected_time = handlers.to_paris(now).strftime("%Y-%m-%d %H:%M")
+    assert (
+        result
+        == f"Event {ev.id} added: {expected_time} {ev.title} | id={ev.id}"
+    )
+
 
 
 @pytest.mark.asyncio
