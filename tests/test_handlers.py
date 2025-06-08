@@ -95,6 +95,12 @@ async def test_handle_list_and_close(async_session: AsyncSession, user: User):
 
 
 @pytest.mark.asyncio
+async def test_handle_list_events_no_events(async_session: AsyncSession, user: User) -> None:
+    text = await handlers.handle_list_events(handlers.CommandContext(async_session, user), "")
+    assert text == "No events found"
+
+
+@pytest.mark.asyncio
 async def test_handle_list_all_events(async_session: AsyncSession, user: User):
     now = datetime.datetime.now(datetime.UTC)
     event1 = await crud.create_event(async_session, user.id, now, "A")
