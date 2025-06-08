@@ -121,6 +121,9 @@ def _date_label(dt: datetime, now: datetime) -> str:
 
 async def handle_list_events(ctx: CommandContext, args: str) -> str:
     events = await crud.list_events(ctx.session, ctx.user.id, include_closed=False)
+    if not events:
+        return "No events found"
+
     now = datetime.now(UTC)
     lines: list[str] = []
     current_label = None
