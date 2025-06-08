@@ -68,7 +68,8 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
     warning = ""
     if start < datetime.now(UTC):
         warning = " (past event)"
-    return f"Event {event.id} added{warning}"
+    time_str = to_paris(start).strftime("%Y-%m-%d %H:%M")
+    return f"Event {event.id} added{warning}: {time_str} {title} | id={event.id}"
 
 
 def _parse_range(args: str) -> tuple[datetime | None, datetime | None]:
