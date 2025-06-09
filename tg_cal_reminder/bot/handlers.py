@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tg_cal_reminder.db import crud
 from tg_cal_reminder.db.models import User
-from tg_cal_reminder.utils.timezones import to_paris
 
 
 def get_secret() -> str:
@@ -68,7 +67,7 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
     warning = ""
     if start < datetime.now(UTC):
         warning = " (past event)"
-    time_str = to_paris(start).strftime("%Y-%m-%d %H:%M")
+    time_str = start.astimezone(UTC).strftime("%Y-%m-%d %H:%M")
     return f"Event {event.id} added{warning}: {time_str} {title} | id={event.id}"
 
 
@@ -107,8 +106,8 @@ def _date_label(dt: datetime, now: datetime) -> str:
         dt = dt.replace(tzinfo=UTC)
     if now.tzinfo is None:
         now = now.replace(tzinfo=UTC)
-    local = to_paris(dt)
-    today = to_paris(now).date()
+    local = dt.astimezone(UTC)
+    today = now.astimezone(UTC).date()
     diff = (local.date() - today).days
     if diff == 0:
         return "Today"
@@ -135,7 +134,7 @@ async def handle_list_events(ctx: CommandContext, args: str) -> str:
         dt = ev.start_time
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=UTC)
-        time_str = to_paris(dt).strftime("%H:%M")
+        time_str = dt.astimezone(UTC).strftime("%H:%M")
         lines.append(f"{time_str} {ev.title} | id={ev.id}")
     return "\n".join(lines)
 

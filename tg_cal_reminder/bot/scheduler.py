@@ -25,7 +25,7 @@ async def weekly_digest() -> None:
 
 
 def create_scheduler() -> AsyncIOScheduler:
-    """Return an ``AsyncIOScheduler`` pre-configured with digest jobs."""
+    """Return an ``AsyncIOScheduler`` pre-configured with digest jobs in UTC."""
     scheduler = AsyncIOScheduler(timezone=UTC)
     scheduler.add_job(
         morning_digest, CronTrigger(hour=6, minute=0, timezone=UTC), id="morning_digest"

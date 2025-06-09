@@ -1,23 +1,22 @@
 import json
 import os
 import textwrap
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, cast
 
 import httpx
-import pytz  # type: ignore[import-untyped]
 from httpx import HTTPError
 
 
-def get_current_time_plus3() -> str:
-    tz = pytz.timezone("Etc/GMT-3")  # GMT-3 is the same as +3:00
-    return datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S %Z")
+def get_current_time_utc() -> str:
+    """Return the current UTC time formatted for the system prompt."""
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 SYSTEM_PROMPT = textwrap.dedent(
     f"""
     You are a translation layer for a Telegram bot.
-    Current time: {get_current_time_plus3()}.
+    Current time: {get_current_time_utc()}.
     Translate the user message into one of the supported commands:
     /start, /lang <code>, /add_event <event_line>, /list_events [username],
     /list_all_events [from to], /close_event <id …>, /help.

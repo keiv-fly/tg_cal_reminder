@@ -28,7 +28,7 @@ calendar_bot/
 │   ├── utils/                  # Utility modules
 │   │   ├── __init__.py
 │   │   ├── parser.py           # Parses event strings (YYYY-MM-DD HH:MM ...) and validates dates
-│   │   └── timezones.py        # Europe/Paris timezone helpers and date calculations
+│   │   └── timezones.py        # UTC timezone helpers and date calculations
 │   └── main.py                 # Entrypoint: loads config, initializes DB, starts polling & scheduler
 └── tests/                      # Test suite
     ├── unit/                  # Unit tests for individual modules
