@@ -124,6 +124,25 @@ async def test_handle_list_all_events(async_session: AsyncSession, user: User):
 
 
 @pytest.mark.asyncio
+async def test_handle_edit_event(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC).replace(microsecond=0)
+    event = await crud.create_event(async_session, user.id, now, "Old")
+    new_start = (now + datetime.timedelta(hours=2)).replace(second=0)
+    args = f"{event.id} {new_start.strftime('%Y-%m-%d %H:%M')} New"
+
+    ctx = handlers.CommandContext(async_session, user)
+    result = await handlers.handle_edit_event(ctx, args)
+
+    assert "updated" in result
+    refreshed = (await crud.list_events(async_session, user.id))[0]
+    assert refreshed.title == "New"
+    assert (
+        refreshed.start_time.replace(tzinfo=datetime.UTC, microsecond=0)
+        == new_start.replace(tzinfo=datetime.UTC, microsecond=0)
+    )
+
+
+@pytest.mark.asyncio
 async def test_parse_event_line_errors():
     with pytest.raises(handlers.HandlerError):
         await handlers.parse_event_line("invalid event")

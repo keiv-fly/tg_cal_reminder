@@ -10,10 +10,11 @@ calendar_bot/
 │       └── xxxx_initial.py     # Initial schema setup: users and events tables
 ├── tg_cal_reminder/            # Application source code
 │   ├── bot/                    # Bot logic and scheduling
-│   │   ├── __init__.py         
+│   │   ├── __init__.py
 │   │   ├── polling.py          # HTTP polling loop using httpx to fetch Telegram updates
 │   │   ├── handlers.py         # Dispatches incoming messages to command handlers via LLM translation
-│   │   └── scheduler.py        # Defines scheduled tasks for daily, evening, and weekly digests
+│   │   ├── scheduler.py        # Defines scheduled tasks for daily, evening, and weekly digests
+│   │   └── commands.py         # Registers bot command list with Telegram
 │   ├── db/                     # Database layer
 │   │   ├── __init__.py
 │   │   ├── models.py           # SQLAlchemy ORM models: User and Event definitions

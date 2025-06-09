@@ -7,6 +7,8 @@ File structure and description of each file are in `file_structure.md`
 Update the design documents if the code is different from the design documents.
 Update the design documents if the task contains features that are not included in the design documents.
 
+When adding new commands, also add a detailed help like for /add_event
+
 When committing changes the following tests should be run:
 - Run tests using `pytest`.
 - Run `mypy` for type checking.
