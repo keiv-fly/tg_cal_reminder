@@ -27,6 +27,13 @@ async def test_main_initializes_components(monkeypatch):
     monkeypatch.setattr(main_mod, "handle_update", dummy_handle)
     monkeypatch.setattr(main_mod, "translate_message", lambda *a, **k: {})
 
+    registered = {}
+
+    async def dummy_register(client):
+        registered["called"] = True
+
+    monkeypatch.setattr(main_mod, "register_commands", dummy_register)
+
     class DummyScheduler:
         def __init__(self):
             self.started = False
@@ -65,5 +72,6 @@ async def test_main_initializes_components(monkeypatch):
     assert poller_instance.run_called
     assert scheduler_instance.started and scheduler_instance.stopped
     assert handle_called.get("called") is True
+    assert registered.get("called") is True
 
     await engine.dispose()
