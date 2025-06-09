@@ -49,7 +49,7 @@ async def test_dispatch_direct_add_event(async_session: AsyncSession, user: User
     events = await crud.list_events(async_session, user.id)
     assert len(events) == 1
     ev = events[0]
-    expected_time = handlers.to_paris(now).strftime("%Y-%m-%d %H:%M")
+    expected_time = now.astimezone(datetime.UTC).strftime("%Y-%m-%d %H:%M")
     assert (
         result
         == f"Event {ev.id} added: {expected_time} {ev.title} | id={ev.id}"

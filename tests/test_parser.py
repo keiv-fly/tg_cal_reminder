@@ -13,13 +13,13 @@ from tg_cal_reminder.utils.parser import (
     [
         (
             "2025-05-20 14:00 Dentist",
-            (datetime.datetime(2025, 5, 20, 12, 0, tzinfo=datetime.UTC), None, "Dentist"),
+            (datetime.datetime(2025, 5, 20, 14, 0, tzinfo=datetime.UTC), None, "Dentist"),
         ),
         (
             "2025-12-31 23:00 2026-01-01 01:00 Party",
             (
-                datetime.datetime(2025, 12, 31, 22, 0, tzinfo=datetime.UTC),
-                datetime.datetime(2026, 1, 1, 0, 0, tzinfo=datetime.UTC),
+                datetime.datetime(2025, 12, 31, 23, 0, tzinfo=datetime.UTC),
+                datetime.datetime(2026, 1, 1, 1, 0, tzinfo=datetime.UTC),
                 "Party",
             ),
         ),

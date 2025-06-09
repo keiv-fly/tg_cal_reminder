@@ -50,7 +50,7 @@ calendar_bot/
 │   ├── utils/                  # Utility modules
 │   │   ├── __init__.py
 │   │   ├── parser.py           # Parses event strings (YYYY-MM-DD HH:MM ...) and validates dates
-│   │   └── timezones.py        # Europe/Paris timezone helpers and date calculations
+│   │   └── timezones.py        # UTC timezone helpers and date calculations
 │   └── main.py                 # Entrypoint: loads config, initializes DB, starts polling & scheduler
 └── tests/                      # Test suite
     ├── unit/                  # Unit tests for individual modules
@@ -108,7 +108,7 @@ The bot:
 * talks to Telegram **strictly via long-polling using httpx** (no web-hooks)
 * persists data in **PostgreSQL** (async SQLAlchemy + asyncpg)
 * off-loads free-form user input to **OpenRouter LLM** which returns one of the **fixed commands**
-* runs on Europe/Paris time for scheduling digests.
+* runs on UTC time for scheduling digests.
 
 ---
 
@@ -119,7 +119,7 @@ The bot:
 | **FR-1**  | **Secret access gate**: after `/start`, the bot sends a one-time secret word. Messages are ignored until the sender replies with that exact word.                                                                                                                                            |
 | **FR-2**  | **Language onboarding**: as soon as the secret is accepted, ask for user’s preferred language (`/lang <code>` behind the scenes) and store it. Replies must thereafter be localised via `i18n/messages.py`.                                                                                  |
 | **FR-3**  | **Rigid command set**: only the commands in § 3 are accepted. All free-text is routed through the LLM translator which must emit one of those commands or an error.                                                                                                                          |
-| **FR-4**  | **/add\_event**: accept exactly `YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` (no semicolons).<br/>• If end-time is omitted the event is open-ended.<br/>• If start < now(), save anyway but warn the user.<br/>• Both datetimes are stored in UTC; display is converted to the user’s locale. |
+| **FR-4**  | **/add\_event**: accept exactly `YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` (no semicolons).<br/>• If end-time is omitted the event is open-ended.<br/>• If start < now(), save anyway but warn the user.<br/>• Both datetimes are stored in UTC and displayed in UTC. |
 | **FR-5**  | **/list\_events \[username]**: list events for the target (default = caller) in chronological order: (1) open events, (2) closed events, each with ID, start, end (if any) and title.                                                                                                        |
 | **FR-6**  | **/close\_event \<id …>**: mark one or many events as closed; ignore unknown IDs; report which ones changed.                                                                                                                                                                                 |
 | **FR-7**  | **/lang <code>** at any time updates the language and persists it.                                                                                                                                                                                                                           |
@@ -207,7 +207,7 @@ The bot:
 
 ## 6. Scheduling logic
 
-*All times Europe/Paris.*
+*All times UTC.*
 
 | Job            | Cron‐like schedule | Query filter                                                                                   | Recipients         |
 | -------------- | ------------------ | ---------------------------------------------------------------------------------------------- | ------------------ |
