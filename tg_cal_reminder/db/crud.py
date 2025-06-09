@@ -68,6 +68,27 @@ async def create_event(
     return event
 
 
+async def update_event(
+    session: AsyncSession,
+    user_id: int,
+    event_id: int,
+    start_time: datetime,
+    title: str,
+    end_time: datetime | None = None,
+) -> Event | None:
+    """Update an existing event and return it or ``None`` if not found."""
+    event = await session.get(Event, event_id)
+    if event is None or event.user_id != user_id:
+        return None
+
+    event.start_time = start_time
+    event.end_time = end_time
+    event.title = title
+    await session.commit()
+    await session.refresh(event)
+    return event
+
+
 async def list_events(
     session: AsyncSession,
     user_id: int,
