@@ -3,6 +3,7 @@ import json
 import httpx
 import pytest
 
+from tg_cal_reminder.llm import translator
 from tg_cal_reminder.llm.translator import OPENROUTER_URL, SYSTEM_PROMPT, translate_message
 
 
@@ -52,3 +53,32 @@ async def test_translate_message_http_error(monkeypatch):
     async with httpx.AsyncClient(transport=transport) as client:
         with pytest.raises(RuntimeError):
             await translate_message(client, "hello", "en")
+
+
+@pytest.mark.asyncio
+async def test_translate_message_logging(monkeypatch):
+    """Translator logs input messages and parsed result."""
+
+    expected = {"command": "/help", "args": []}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        data = {"choices": [{"message": {"content": json.dumps(expected)}}]}
+        return httpx.Response(200, json=data)
+
+    transport = httpx.MockTransport(handler)
+    async with httpx.AsyncClient(transport=transport) as client:
+        class DummyLogger:
+            def __init__(self) -> None:
+                self.records: list[str] = []
+
+            def info(self, msg: str, *args: object) -> None:
+                self.records.append(msg % args)
+
+        dummy = DummyLogger()
+        monkeypatch.setattr(translator, "logger", dummy)
+
+        result = await translate_message(client, "hello", "en")
+
+    assert result == expected
+    assert any("LLM request messages" in r for r in dummy.records)
+    assert any("LLM parsed result" in r for r in dummy.records)

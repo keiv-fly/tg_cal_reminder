@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import textwrap
 from datetime import UTC, datetime
@@ -6,6 +7,8 @@ from typing import Any, cast
 
 import httpx
 from httpx import HTTPError
+
+logger = logging.getLogger(__name__)
 
 
 def get_current_time_utc() -> str:
@@ -77,6 +80,7 @@ async def translate_message(
         ],
         "temperature": 0,
     }
+    logger.info("LLM request messages: %s", payload["messages"])
     headers = {
         "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY', '')}",
         "Content-Type": "application/json",
@@ -91,10 +95,13 @@ async def translate_message(
     try:
         data = response.json()
         content = data["choices"][0]["message"]["content"]
+        logger.info("LLM raw response: %s", content)
     except Exception as exc:  # pragma: no cover - invalid API response
         raise ValueError("Invalid LLM response") from exc
 
     try:
-        return cast(dict[str, Any], json.loads(content))
+        result = cast(dict[str, Any], json.loads(content))
+        logger.info("LLM parsed result: %s", result)
+        return result
     except json.JSONDecodeError as exc:
         raise ValueError("Invalid JSON returned by LLM") from exc

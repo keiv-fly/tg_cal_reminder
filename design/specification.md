@@ -143,6 +143,8 @@ The bot:
 1. `docker compose up –d` starts Postgres; alembic migrations auto-run on start-up.
 2. The bot process is a single service; horizontal scaling would require external job queue and distributed lock for the scheduler – **out of scope**.
 3. Logging: human-readable INFO logs to stdout; DEBUG enabled via `LOG_LEVEL=DEBUG`.
+   The LLM translator logs the input messages it sends and the parsed JSON
+   response returned by the model at INFO level.
 
 ---
 
