@@ -10,10 +10,11 @@ calendar_bot/
 │       └── xxxx_initial.py     # Initial schema setup: users and events tables
 ├── tg_cal_reminder/            # Application source code
 │   ├── bot/                    # Bot logic and scheduling
-│   │   ├── __init__.py         
+│   │   ├── __init__.py
 │   │   ├── polling.py          # HTTP polling loop using httpx to fetch Telegram updates
 │   │   ├── handlers.py         # Dispatches incoming messages to command handlers via LLM translation
-│   │   └── scheduler.py        # Defines scheduled tasks for daily, evening, and weekly digests
+│   │   ├── scheduler.py        # Defines scheduled tasks for daily, evening, and weekly digests
+│   │   └── commands.py         # Registers bot command list with Telegram
 │   ├── db/                     # Database layer
 │   │   ├── __init__.py
 │   │   ├── models.py           # SQLAlchemy ORM models: User and Event definitions
@@ -44,3 +45,5 @@ calendar_bot/
     │   └── test_timezones.py   # Tests for timezone helpers in timezones.py
     └── integration/           # End-to-end integration tests
         └── test_end_to_end.py  # Simulates bot flow: user registration, add/list/close events
+llm_tests/                      # Live tests for the OpenRouter LLM
+└── test_translator_live.py     # Verifies translator responses using the real API

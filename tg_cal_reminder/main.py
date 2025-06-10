@@ -8,6 +8,7 @@ from alembic.config import Config
 from dotenv import load_dotenv
 
 from tg_cal_reminder.bot import scheduler
+from tg_cal_reminder.bot.commands import register_commands
 from tg_cal_reminder.bot.polling import Poller
 from tg_cal_reminder.bot.update import handle_update
 from tg_cal_reminder.db.sessions import get_engine, get_sessionmaker
@@ -39,6 +40,8 @@ async def main() -> None:
 
         async def translator(text: str, lang: str) -> dict:
             return await translate_message(llm_client, text, lang)
+
+        await register_commands(tg_client)
 
         poller = Poller(
             token,

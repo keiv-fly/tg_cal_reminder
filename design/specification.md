@@ -33,8 +33,8 @@ The bot:
 | **FR-10** | **Past-date warning rule**: any event whose start is in the past triggers a warning message at creation time but remains valid.                                                                                                                                                              |
 | **FR-11** | **Idempotent polling**: updates processed once must never be re-processed. Store last Telegram update\_id and resume from there after restart.                                                                                                                                               |
 | **FR-12** | **Admin-less**: all functionality is per-user; there is no global admin role.                                                                                                                                                                                                                |
-| **FR-13** | **/timezone <name>** lets users set their preferred IANA timezone.
-                                                           |
+| **FR-13** | **Command registration**: on startup the bot calls `setMyCommands` so Telegram shows the available commands in the chat UI. |
+| **FR-14** | **/timezone <name>** lets users set their preferred IANA timezone.                                                          |
 
 ---
 
@@ -146,6 +146,8 @@ The bot:
 1. `docker compose up –d` starts Postgres; alembic migrations auto-run on start-up.
 2. The bot process is a single service; horizontal scaling would require external job queue and distributed lock for the scheduler – **out of scope**.
 3. Logging: human-readable INFO logs to stdout; DEBUG enabled via `LOG_LEVEL=DEBUG`.
+   The LLM translator logs the input messages it sends and the parsed JSON
+   response returned by the model at INFO level.
 
 ---
 
