@@ -9,6 +9,7 @@ class TranslatorResponse(BaseModel):
             "/start",
             "/lang",
             "/add_event",
+            "/edit_event",
             "/list_events",
             "/list_all_events",
             "/close_event",
@@ -28,6 +29,11 @@ class TranslatorResponse(BaseModel):
             Optional: end date/time in brackets
             Example: /add_event 2024-05-17 14:30 Team meeting
             Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
+        /edit_event <id> <YYYY-MM-DD HH:mm [YYYY-MM-DD HH:mm] title>
+            Required: event id and new start date/time
+            Optional: end date/time in brackets
+            Example: /edit_event 1 2024-05-17 14:30 Updated meeting
+            Example: /edit_event 1 2024-05-17 14:30 2024-05-17 15:30 Updated meeting
         /list_events [username]
         /list_all_events [<YYYY-MM-DD HH:mm> [YYYY-MM-DD HH:mm]]
             Optional: start date/time

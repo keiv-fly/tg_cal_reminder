@@ -117,3 +117,18 @@ async def test_close_events_empty_and_cross_user(async_session: AsyncSession):
     refreshed = await crud.list_events(async_session, user2.id)
     assert refreshed[0].is_closed is False
 
+
+@pytest.mark.asyncio
+async def test_update_event(async_session: AsyncSession):
+    user = await crud.create_user(async_session, telegram_id=30)
+    now = datetime.datetime.now(datetime.UTC)
+    event = await crud.create_event(async_session, user.id, now, title="orig")
+
+    new_start = now + datetime.timedelta(hours=1)
+    updated = await crud.update_event(
+        async_session, user.id, event.id, new_start, "updated", None
+    )
+    assert updated is not None
+    assert updated.title == "updated"
+    assert updated.start_time == new_start.replace(tzinfo=None)
+

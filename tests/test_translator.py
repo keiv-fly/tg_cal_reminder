@@ -52,3 +52,8 @@ async def test_translate_message_http_error(monkeypatch):
     async with httpx.AsyncClient(transport=transport) as client:
         with pytest.raises(RuntimeError):
             await translate_message(client, "hello", "en")
+
+
+def test_system_prompt_contains_edit_event() -> None:
+    """Ensure new command is documented in the system prompt."""
+    assert "/edit_event" in SYSTEM_PROMPT

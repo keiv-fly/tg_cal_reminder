@@ -199,3 +199,17 @@ async def test_handle_list_events_grouping(
     assert "2025-06-08:" in text
     for ev in (e1, e2, e3, e4):
         assert f"id={ev.id}" in text
+
+
+@pytest.mark.asyncio
+async def test_handle_edit_event(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC)
+    event = await crud.create_event(async_session, user.id, now, "Old")
+
+    new_line = (now + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") + " New"
+    ctx = handlers.CommandContext(async_session, user)
+    result = await handlers.handle_edit_event(ctx, f"{event.id} {new_line}")
+
+    assert "updated" in result or "Event" in result
+    updated = (await crud.list_events(async_session, user.id))[0]
+    assert updated.title == "New"
