@@ -45,3 +45,5 @@ calendar_bot/
     │   └── test_timezones.py   # Tests for timezone helpers in timezones.py
     └── integration/           # End-to-end integration tests
         └── test_end_to_end.py  # Simulates bot flow: user registration, add/list/close events
+llm_tests/                      # Live tests for the OpenRouter LLM
+└── test_translator_live.py     # Verifies translator responses using the real API
