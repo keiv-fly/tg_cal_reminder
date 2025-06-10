@@ -14,7 +14,8 @@ MESSAGES: dict[str, dict[str, str]] = {
             "/list_events [username] – list events\n"
             "/list_all_events [from to] – list events in range\n"
             "/close_event <id …> – close events\n"
-            "/lang <code> – change language"
+            "/lang <code> – change language\n"
+            "/timezone <name> – set timezone"
         ),
         "unknown_command": "Unknown command. Send /help for usage.",
     },
@@ -27,7 +28,8 @@ MESSAGES: dict[str, dict[str, str]] = {
             "/list_events [utilisateur] – lister les événements\n"
             "/list_all_events [from to] – lister la plage\n"
             "/close_event <id …> – clôturer des événements\n"
-            "/lang <code> – changer de langue"
+            "/lang <code> – changer de langue\n"
+            "/timezone <nom> – fuseau horaire"
         ),
         # Intentionally omit 'unknown_command' to test fallback
     },
@@ -40,7 +42,8 @@ MESSAGES: dict[str, dict[str, str]] = {
             "/list_events [пользователь] – список событий\n"
             "/list_all_events [from to] – события в диапазоне\n"
             "/close_event <id …> – закрыть события\n"
-            "/lang <code> – изменить язык"
+            "/lang <code> – изменить язык\n"
+            "/timezone <название> – часовой пояс"
         ),
     },
 }

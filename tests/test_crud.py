@@ -51,6 +51,15 @@ async def test_update_user_language(async_session: AsyncSession):
 
 
 @pytest.mark.asyncio
+async def test_update_user_timezone(async_session: AsyncSession) -> None:
+    user = await crud.create_user(async_session, telegram_id=20)
+    updated = await crud.update_user_timezone(async_session, user, "Europe/Berlin")
+    assert updated.timezone == "Europe/Berlin"
+    refreshed = await crud.get_user_by_telegram_id(async_session, user.telegram_id)
+    assert refreshed.timezone == "Europe/Berlin"
+
+
+@pytest.mark.asyncio
 async def test_event_operations(async_session: AsyncSession):
     user = await crud.create_user(async_session, telegram_id=3, username="carol")
     now = datetime.datetime.now(datetime.UTC)

@@ -16,6 +16,7 @@ async def create_user(
     telegram_id: int,
     username: str | None = None,
     language: str = "en",
+    timezone: str = "UTC",
     is_authorized: bool = False,
 ) -> User:
     """Create and return a new ``User`` record."""
@@ -23,6 +24,7 @@ async def create_user(
         telegram_id=telegram_id,
         username=username,
         language=language,
+        timezone=timezone,
         is_authorized=is_authorized,
     )
     session.add(user)
@@ -40,6 +42,14 @@ async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int) -> Us
 async def update_user_language(session: AsyncSession, user: User, language: str) -> User:
     """Update a user's language preference."""
     user.language = language
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+
+async def update_user_timezone(session: AsyncSession, user: User, timezone: str) -> User:
+    """Update a user's timezone."""
+    user.timezone = timezone
     await session.commit()
     await session.refresh(user)
     return user

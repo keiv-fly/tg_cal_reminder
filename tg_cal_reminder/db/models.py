@@ -19,6 +19,7 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     username: Mapped[str | None] = mapped_column(String, nullable=True)
     language: Mapped[str] = mapped_column(String(2), nullable=False, default="en")
+    timezone: Mapped[str] = mapped_column(String, nullable=False, default="UTC")
     is_authorized: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
@@ -30,7 +31,10 @@ class User(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, telegram_id={self.telegram_id}, username={self.username})>"
+        return (
+            f"<User(id={self.id}, telegram_id={self.telegram_id}, username={self.username}, "
+            f"tz={self.timezone})>"
+        )
 
 
 class Event(Base):
