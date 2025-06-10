@@ -13,12 +13,13 @@ Telegram bot using **httpx** with the Telegram HTTP Bot API, a **PostgreSQL** da
 ## Features
 1. Save events to a user’s calendar.
 2. Show all events, sorted by time, for the current or any specified user.
-3. Edit existing events by their ID.
-4. Close events by their IDs.
-5. Register bot commands with Telegram so they appear in the UI.
-6. Every evening, list events planned for the next day.
-7. Every morning, list events planned for the same day.
-8. Every Monday, list events planned for the week.
+3. List events in a specific date range.
+4. Edit existing events by their ID.
+5. Close events by their IDs.
+6. Register bot commands with Telegram so they appear in the UI.
+7. Every evening, list events planned for the next day.
+8. Every morning, list events planned for the same day.
+9. Every Monday, list events planned for the week.
 
 The bot polls Telegram for messages—no webhooks are used.
 
@@ -140,6 +141,7 @@ The bot:
 /lang <code>                 # ISO-639-1, two letters
 /add_event <event_line>      # rigid syntax above
 /edit_event <id event_line>  # edit existing event
+/list_all_events [from to]
 /list_events [username]
 /close_event <id …>
 /help
