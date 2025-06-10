@@ -138,6 +138,7 @@ The bot:
 /lang <code>                 # ISO-639-1, two letters
 /add_event <event_line>      # rigid syntax above
 /list_events [username]
+/timezone <name>
 /close_event <id …>
 /help
 ```

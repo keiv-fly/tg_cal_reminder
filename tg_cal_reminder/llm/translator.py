@@ -19,7 +19,7 @@ SYSTEM_PROMPT = textwrap.dedent(
     Current time: {get_current_time_utc()}.
     Translate the user message into one of the supported commands:
     /start, /lang <code>, /add_event <event_line>, /list_events [username],
-    /list_all_events [from to], /close_event <id …>, /help.
+    /list_all_events [from to], /close_event <id …>, /timezone <name>, /help.
     Return a JSON object correspoding to this Pedantic model:
     ```python
     class TranslatorResponse(BaseModel):
@@ -31,6 +31,7 @@ SYSTEM_PROMPT = textwrap.dedent(
                 "/list_events",
                 "/list_all_events",
                 "/close_event",
+                "/timezone",
                 "/help",
             ]
             | None
@@ -57,6 +58,10 @@ SYSTEM_PROMPT = textwrap.dedent(
             Example: /list_all_events
             Example: /list_all_events 2024-05-01 00:00
             Example: /list_all_events 2024-05-01 00:00 2024-05-31 23:59
+        /timezone <name>
+            Example: /timezone Europe/Moscow
+            Example: /timezone Europe/Paris
+            Example: /timezone America/New_York
         /close_event <id>
         /help
     """.strip()

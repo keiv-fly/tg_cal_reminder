@@ -33,6 +33,8 @@ The bot:
 | **FR-10** | **Past-date warning rule**: any event whose start is in the past triggers a warning message at creation time but remains valid.                                                                                                                                                              |
 | **FR-11** | **Idempotent polling**: updates processed once must never be re-processed. Store last Telegram update\_id and resume from there after restart.                                                                                                                                               |
 | **FR-12** | **Admin-less**: all functionality is per-user; there is no global admin role.                                                                                                                                                                                                                |
+| **FR-13** | **/timezone <name>** lets users set their preferred IANA timezone.
+                                                           |
 
 ---
 
@@ -43,6 +45,7 @@ The bot:
 /lang <code>                 # ISO-639-1, two letters
 /add_event <event_line>      # rigid syntax above
 /list_events [username]
+/timezone <name>
 /close_event <id …>
 /help
 ```

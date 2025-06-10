@@ -68,6 +68,15 @@ async def test_dispatch_free_text_uses_translator(async_session: AsyncSession, u
 
 
 @pytest.mark.asyncio
+async def test_handle_timezone(async_session: AsyncSession, user: User) -> None:
+    ctx = handlers.CommandContext(async_session, user)
+    reply = await handlers.handle_timezone(ctx, "Europe/Berlin")
+    assert "Timezone updated" in reply
+    refreshed = await crud.get_user_by_telegram_id(async_session, user.telegram_id)
+    assert refreshed.timezone == "Europe/Berlin"
+
+
+@pytest.mark.asyncio
 async def test_handle_list_and_close(async_session: AsyncSession, user: User):
     now = datetime.datetime.now(datetime.UTC)
     event1 = await crud.create_event(async_session, user.id, now, "First")

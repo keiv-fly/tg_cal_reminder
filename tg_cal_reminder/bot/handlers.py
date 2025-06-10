@@ -6,6 +6,7 @@ import textwrap
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -59,6 +60,18 @@ async def handle_lang(ctx: CommandContext, args: str) -> str:
         raise HandlerError("Language code required")
     await crud.update_user_language(ctx.session, ctx.user, language)
     return f"Language updated to {language}"
+
+
+async def handle_timezone(ctx: CommandContext, args: str) -> str:
+    zone = args.strip()
+    if not zone:
+        raise HandlerError("Timezone name required")
+    try:
+        ZoneInfo(zone)
+    except Exception as exc:
+        raise HandlerError("Invalid timezone") from exc
+    await crud.update_user_timezone(ctx.session, ctx.user, zone)
+    return f"Timezone updated to {zone}"
 
 
 async def handle_add_event(ctx: CommandContext, args: str) -> str:
@@ -164,6 +177,10 @@ async def handle_help(ctx: CommandContext, args: str) -> str:
             Example: /list_all_events
             Example: /list_all_events 2024-05-01 00:00
             Example: /list_all_events 2024-05-01 00:00 2024-05-31 23:59
+        /timezone <name>
+            Example: /timezone Europe/Moscow
+            Example: /timezone Europe/Paris
+            Example: /timezone America/New_York
         /close_event <id>
         /help
         """
@@ -178,6 +195,7 @@ _HANDLERS: dict[str, CommandHandler] = {
     "/add_event": handle_add_event,
     "/list_events": handle_list_events,
     "/list_all_events": handle_list_all_events,
+    "/timezone": handle_timezone,
     "/close_event": handle_close_event,
     "/help": handle_help,
 }
