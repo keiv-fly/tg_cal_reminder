@@ -109,6 +109,28 @@ async def test_event_operations(async_session: AsyncSession):
 
 
 @pytest.mark.asyncio
+async def test_update_event(async_session: AsyncSession) -> None:
+    user = await crud.create_user(async_session, telegram_id=50)
+    now = datetime.datetime.now(datetime.UTC)
+    event = await crud.create_event(async_session, user.id, now, "old")
+    new_start = now + datetime.timedelta(hours=1)
+
+    updated = await crud.update_event(
+        async_session, user.id, event.id, new_start, "new", None
+    )
+    assert updated is True
+
+    fetched = (await crud.list_events(async_session, user.id))[0]
+    assert fetched.title == "new" and fetched.start_time == new_start
+
+    other = await crud.create_user(async_session, telegram_id=60)
+    updated_other = await crud.update_event(
+        async_session, other.id, event.id, now, "fail", None
+    )
+    assert updated_other is False
+
+
+@pytest.mark.asyncio
 async def test_close_events_empty_and_cross_user(async_session: AsyncSession):
     user1 = await crud.create_user(async_session, telegram_id=10)
     user2 = await crud.create_user(async_session, telegram_id=20)

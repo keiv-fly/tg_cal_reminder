@@ -11,6 +11,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "language_set": "Language changed to {language}.",
         "help": (
             "/add_event <event_line> – add event\n"
+            "/edit_event <id event_line> – edit event\n"
             "/list_events [username] – list events\n"
             "/list_all_events [from to] – list events in range\n"
             "/close_event <id …> – close events\n"
@@ -25,6 +26,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "language_set": "La langue a été définie sur {language}.",
         "help": (
             "/add_event <ligne> – ajouter un événement\n"
+            "/edit_event <id ligne> – modifier un événement\n"
             "/list_events [utilisateur] – lister les événements\n"
             "/list_all_events [from to] – lister la plage\n"
             "/close_event <id …> – clôturer des événements\n"
@@ -39,6 +41,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "language_set": "Язык изменен на {language}.",
         "help": (
             "/add_event <событие> – добавить событие\n"
+            "/edit_event <id событие> – изменить событие\n"
             "/list_events [пользователь] – список событий\n"
             "/list_all_events [from to] – события в диапазоне\n"
             "/close_event <id …> – закрыть события\n"

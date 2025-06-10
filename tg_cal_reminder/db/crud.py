@@ -112,6 +112,29 @@ async def close_events(
     return [row[0] for row in result.fetchall()]
 
 
+async def update_event(
+    session: AsyncSession,
+    user_id: int,
+    event_id: int,
+    start_time: datetime,
+    title: str,
+    end_time: datetime | None = None,
+) -> bool:
+    """Update an event owned by ``user_id``.
+
+    Returns ``True`` if an event was updated, ``False`` otherwise.
+    """
+    stmt = (
+        update(Event)
+        .where(and_(Event.user_id == user_id, Event.id == event_id))
+        .values(start_time=start_time, end_time=end_time, title=title)
+        .returning(Event.id)
+    )
+    result = await session.execute(stmt)
+    await session.commit()
+    return result.scalar_one_or_none() is not None
+
+
 async def get_events_between(
     session: AsyncSession,
     user_id: int,
