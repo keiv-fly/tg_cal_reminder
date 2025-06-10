@@ -84,6 +84,26 @@ async def handle_add_event(ctx: CommandContext, args: str) -> str:
     return f"Event {event.id} added{warning}: {time_str} {title} | id={event.id}"
 
 
+async def handle_edit_event(ctx: CommandContext, args: str) -> str:
+    parts = args.split(maxsplit=1)
+    if len(parts) != 2 or not parts[0].isdigit():
+        raise HandlerError("Invalid edit usage")
+    event_id = int(parts[0])
+    start, end, title = await parse_event_line(parts[1])
+    updated = await crud.update_event(
+        ctx.session, ctx.user.id, event_id, start, title, end
+    )
+    if not updated:
+        raise HandlerError("Event not found")
+    warning = ""
+    if start < datetime.now(UTC):
+        warning = " (past event)"
+    time_str = start.astimezone(UTC).strftime("%Y-%m-%d %H:%M")
+    return (
+        f"Event {event_id} updated{warning}: {time_str} {title} | id={event_id}"
+    )
+
+
 def _parse_range(args: str) -> tuple[datetime | None, datetime | None]:
     parts = args.split()
     if not parts:
@@ -170,6 +190,10 @@ async def handle_help(ctx: CommandContext, args: str) -> str:
             Optional: end date/time in brackets
             Example: /add_event 2024-05-17 14:30 Team meeting
             Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
+        /edit_event <id> <YYYY-MM-DD HH:mm [YYYY-MM-DD HH:mm] title>
+            Replace an existing event with the new data
+            Example: /edit_event 5 2024-05-17 14:30 Updated meeting
+            Example: /edit_event 5 2024-05-17 14:30 2024-05-17 15:00 Updated meeting
         /list_events [username]
         /list_all_events [<YYYY-MM-DD HH:mm> [YYYY-MM-DD HH:mm]]
             Optional: start date/time
@@ -193,6 +217,7 @@ _HANDLERS: dict[str, CommandHandler] = {
     "/start": handle_start,
     "/lang": handle_lang,
     "/add_event": handle_add_event,
+    "/edit_event": handle_edit_event,
     "/list_events": handle_list_events,
     "/list_all_events": handle_list_all_events,
     "/timezone": handle_timezone,

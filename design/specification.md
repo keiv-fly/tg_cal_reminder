@@ -42,7 +42,9 @@ The bot:
 /start
 /lang <code>                 # ISO-639-1, two letters
 /add_event <event_line>      # rigid syntax above
+/edit_event <id event_line>
 /list_events [username]
+/list_all_events [from to]
 /timezone <name>
 /close_event <id …>
 /help
