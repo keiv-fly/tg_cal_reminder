@@ -19,23 +19,21 @@ The bot:
 
 ## 2. Functional requirements
 
-| #         | Requirement                                                                                                                                                                                                                                                                                  |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **FR-1**  | **Secret access gate**: after `/start`, the bot sends a one-time secret word. Messages are ignored until the sender replies with that exact word.                                                                                                                                            |
-| **FR-2**  | **Language onboarding**: as soon as the secret is accepted, ask for user’s preferred language (`/lang <code>` behind the scenes) and store it. Replies must thereafter be localised via `i18n/messages.py`.                                                                                  |
-| **FR-3**  | **Rigid command set**: only the commands in § 3 are accepted. All free-text is routed through the LLM translator which must emit one of those commands or an error.                                                                                                                          |
-| **FR-4**  | **/add\_event**: accept exactly `YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` (no semicolons).<br/>• If end-time is omitted the event is open-ended.<br/>• If start < now(), save anyway but warn the user.<br/>• Both datetimes are stored in UTC and displayed in UTC. |
-| **FR-5**  | **/list\_events \[username]**: list events for the target (default = caller) in chronological order: (1) open events, (2) closed events, each with ID, start, end (if any) and title.                                                                                                        |
-| **FR-6**  | **/close\_event \<id …>**: mark one or many events as closed; ignore unknown IDs; report which ones changed.                                                                                                                                                                                 |
-| **FR-7**  | **/lang <code>** at any time updates the language and persists it.                                                                                                                                                                                                                           |
-| **FR-8**  | **/help** prints a concise multilingual cheat-sheet of every command and the event format.                                                                                                                                                                                                   |
-| **FR-9**  | **Automatic digests** (sent only to the owner of the events):<br/>• every evening (19:00) – events for the next day<br/>• every morning (08:00) – events for today<br/>• every Monday 08:00 – events for Mon-Sun of the current week                                                         |
-| **FR-10** | **Past-date warning rule**: any event whose start is in the past triggers a warning message at creation time but remains valid.                                                                                                                                                              |
-| **FR-11** | **Idempotent polling**: updates processed once must never be re-processed. Store last Telegram update\_id and resume from there after restart.                                                                                                                                               |
-| **FR-12** | **Admin-less**: all functionality is per-user; there is no global admin role.                                                                                                                                                                                                                |
-| **FR-13** | **Command registration**: on startup the bot calls `setMyCommands` so Telegram shows the available commands in the chat UI. |
-| **FR-14** | **/timezone <name>** lets users set their preferred IANA timezone.                                                          |
 
+* **Secret access gate**: after `/start`, the bot sends a one-time secret word. Messages are ignored until the sender replies with that exact word.
+* **Language onboarding**: as soon as the secret is accepted, ask for user’s preferred language (`/lang <code>` behind the scenes) and store it. Replies must thereafter be localised via `i18n/messages.py`.
+* **Rigid command set**: only the commands in § 3 are accepted. All free-text is routed through the LLM translator which must emit one of those commands or an error.
+* **/add_event**: accept exactly `YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` (no semicolons).<br/>• If end-time is omitted the event is open-ended.<br/>• If start < now(), save anyway but warn the user.<br/>• Both datetimes are stored in UTC and displayed in UTC.
+* **/list_events [username]**: list events for the target (default = caller) in chronological order: (1) open events, (2) closed events, each with ID, start, end (if any) and title.
+* **/close_event <id …>**: mark one or many events as closed; ignore unknown IDs; report which ones changed.
+* **/lang <code>** at any time updates the language and persists it.
+* **/help** prints a concise multilingual cheat-sheet of every command and the event format.
+* **Automatic digests** (sent only to the owner of the events):<br/>• every evening (19:00) – events for the next day<br/>• every morning (08:00) – events for today<br/>• every Monday 08:00 – events for Mon-Sun of the current week
+* **Past-date warning rule**: any event whose start is in the past triggers a warning message at creation time but remains valid.
+* **Idempotent polling**: updates processed once must never be re-processed. Store last Telegram update_id and resume from there after restart.
+* **Admin-less**: all functionality is per-user; there is no global admin role.
+* **Command registration**: on startup the bot calls `setMyCommands` so Telegram shows the available commands in the chat UI.
+* **/timezone <name>** lets users set their preferred IANA timezone.
 ---
 
 ## 3. User-visible commands (strict grammar)
