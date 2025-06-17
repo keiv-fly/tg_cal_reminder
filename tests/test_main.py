@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -68,6 +69,8 @@ async def test_main_initializes_components(monkeypatch):
     monkeypatch.setattr(main_mod, "Poller", poller_factory)
 
     await main_mod.main()
+
+    assert logging.getLogger().level == logging.INFO
 
     assert poller_instance.run_called
     assert scheduler_instance.started and scheduler_instance.stopped
