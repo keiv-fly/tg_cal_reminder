@@ -91,6 +91,7 @@ async def translate_message(
         "temperature": 0,
     }
     logger.info("LLM request messages: %s", payload["messages"])
+    print(payload["messages"])
     headers = {
         "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY', '')}",
         "Content-Type": "application/json",
@@ -106,6 +107,7 @@ async def translate_message(
         data = response.json()
         logger.info("LLM raw response: %s", data)
         content = data["choices"][0]["message"]["content"]
+        print(content)
 
     except Exception as exc:  # pragma: no cover - invalid API response
         raise ValueError("Invalid LLM response") from exc
