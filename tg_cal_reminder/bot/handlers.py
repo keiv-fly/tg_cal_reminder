@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tg_cal_reminder.db import crud
-from tg_cal_reminder.db.models import User
+from tg_cal_reminder.db.models import Event, User
 
 
 def get_secret() -> str:
@@ -153,10 +153,24 @@ def _date_label(dt: datetime, now: datetime) -> str:
 
 async def handle_list_events(ctx: CommandContext, args: str) -> str:
     events = await crud.list_events(ctx.session, ctx.user.id, include_closed=False)
+
+    tz = ZoneInfo(ctx.user.timezone)
+    now_local = datetime.now(tz)
+    today_start_utc = (
+        now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        .astimezone(UTC)
+    )
+    now = now_local.astimezone(UTC)
+    filtered: list[Event] = []
+    for ev in events:
+        dt = ev.start_time
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=UTC)
+        if dt >= today_start_utc:
+            filtered.append(ev)
+    events = filtered
     if not events:
         return "No events found"
-
-    now = datetime.now(UTC)
     lines: list[str] = []
     current_label = None
     for ev in events:

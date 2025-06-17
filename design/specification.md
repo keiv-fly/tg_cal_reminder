@@ -24,7 +24,7 @@ The bot:
 * **Language onboarding**: as soon as the secret is accepted, ask for user’s preferred language (`/lang <code>` behind the scenes) and store it. Replies must thereafter be localised via `i18n/messages.py`.
 * **Rigid command set**: only the commands in § 3 are accepted. All free-text is routed through the LLM translator which must emit one of those commands or an error.
 * **/add_event**: accept exactly `YYYY-MM-DD HH:MM [YYYY-MM-DD HH:MM] Title` (no semicolons).<br/>• If end-time is omitted the event is open-ended.<br/>• If start < now(), save anyway but warn the user.<br/>• Both datetimes are stored in UTC and displayed in UTC.
-* **/list_events [username]**: list events for the target (default = caller) in chronological order: (1) open events, (2) closed events, each with ID, start, end (if any) and title.
+* **/list_events [username]**: list events for the target (default = caller) starting from the beginning of their current day in their timezone, in chronological order: (1) open events, (2) closed events, each with ID, start, end (if any) and title.
 * **/close_event <id …>**: mark one or many events as closed; ignore unknown IDs; report which ones changed.
 * **/lang <code>** at any time updates the language and persists it.
 * **/help** prints a concise multilingual cheat-sheet of every command and the event format.

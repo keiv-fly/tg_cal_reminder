@@ -114,6 +114,25 @@ async def test_handle_list_events_no_events(async_session: AsyncSession, user: U
 
 
 @pytest.mark.asyncio
+async def test_handle_list_events_filters_past(async_session: AsyncSession, user: User) -> None:
+    now = datetime.datetime.now(datetime.UTC)
+    start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    yesterday = start_of_today - datetime.timedelta(hours=1)
+    past_today = start_of_today
+    future = now + datetime.timedelta(hours=1)
+
+    await crud.create_event(async_session, user.id, yesterday, "Yesterday")
+    past_event = await crud.create_event(async_session, user.id, past_today, "Past Today")
+    future_event = await crud.create_event(async_session, user.id, future, "Future")
+
+    ctx = handlers.CommandContext(async_session, user)
+    text = await handlers.handle_list_events(ctx, "")
+    assert "Yesterday" not in text
+    assert f"id={past_event.id}" in text
+    assert f"id={future_event.id}" in text
+
+
+@pytest.mark.asyncio
 async def test_handle_list_all_events(async_session: AsyncSession, user: User):
     now = datetime.datetime.now(datetime.UTC)
     event1 = await crud.create_event(async_session, user.id, now, "A")
