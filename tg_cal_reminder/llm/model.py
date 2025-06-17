@@ -1,9 +1,25 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TranslatorResponse(BaseModel):
+    does_the_user_mention_towns: bool = Field(
+        default=False,
+        description=(
+            "Return True if the user mentions any town or city name in the message."
+            ' Like "Moscow", "Paris", "New York", etc.'
+        ),
+    )
+    related_to_changing_timezone: bool = Field(
+        default=False,
+        description=(
+            "The user message is related to changing the timezone if he says something like "
+            '"change timezone to <timezone>". In Russian it could also be said '
+            '"переведи моё время в <timezone>". If the town or city name is mentioned, '
+            "then it is more likely that the user wants to change the timezone."
+        ),
+    )
     command: (
         Literal[
             "/start",
@@ -18,23 +34,12 @@ class TranslatorResponse(BaseModel):
     ) = None
     args: list[str] | None = None
     error: Literal["Unrecognized"] | None = None
-
-
-"""
-        /start
-        /lang <code>
-        /add_event <YYYY-MM-DD HH:mm [YYYY-MM-DD HH:mm] title>
-            Required: start date/time and title
-            Optional: end date/time in brackets
-            Example: /add_event 2024-05-17 14:30 Team meeting
-            Example: /add_event 2024-05-17 14:30 2024-05-17 15:30 Team meeting
-        /list_events [username]
-        /list_all_events [<YYYY-MM-DD HH:mm> [YYYY-MM-DD HH:mm]]
-            Optional: start date/time
-            Optional: end date/time in brackets (requires start date/time)
-            Example: /list_all_events
-            Example: /list_all_events 2024-05-01 00:00
-            Example: /list_all_events 2024-05-01 00:00 2024-05-31 23:59
-        /close_event <id>
-        /help
-"""
+    error_reason: str | None = Field(
+        default=None,
+        description=(
+            "If the user message is not related to any of the commands, then return a long "
+            "explanation why it is not related to any of the commands. "
+            "List all of the possible commands and explain why they are not related to the user "
+            "message. The explanation should be in English."
+        ),
+    )
