@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 async def main() -> None:
-    print("Starting bot...")
+    logger.info("Starting bot...")
     load_dotenv()
     token = os.environ.get("BOT_TOKEN")
     if not token:
@@ -51,10 +51,10 @@ async def main() -> None:
         sched = scheduler.create_scheduler()
         sched.start()
         try:
-            print("Bot is now polling for updates...")
+            logger.info("Bot is now polling for updates...")
             await poller.run()
         finally:
-            print("Shutting down bot...")
+            logger.info("Shutting down bot...")
             sched.shutdown()
 
 

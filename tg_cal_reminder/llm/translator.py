@@ -104,8 +104,9 @@ async def translate_message(
 
     try:
         data = response.json()
+        logger.info("LLM raw response: %s", data)
         content = data["choices"][0]["message"]["content"]
-        logger.info("LLM raw response: %s", content)
+
     except Exception as exc:  # pragma: no cover - invalid API response
         raise ValueError("Invalid LLM response") from exc
 
