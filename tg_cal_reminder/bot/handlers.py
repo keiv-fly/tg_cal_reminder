@@ -249,8 +249,9 @@ async def dispatch(
         if translator is None:
             raise HandlerError("No translator provided for free text")
         result = await translator(text, language_code, user.timezone)
-        if "error" in result:
-            raise HandlerError(result["error"])
+        error = result.get("error")
+        if error:
+            raise HandlerError(error)
         command = result.get("command", "")
         raw_args = result.get("args")
         args = " ".join(raw_args) if isinstance(raw_args, list) else raw_args or ""
