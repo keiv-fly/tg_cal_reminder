@@ -12,10 +12,12 @@ from tg_cal_reminder.bot.commands import register_commands
 from tg_cal_reminder.bot.polling import Poller
 from tg_cal_reminder.bot.update import handle_update
 from tg_cal_reminder.db.sessions import get_engine, get_sessionmaker
+from tg_cal_reminder.llm import translator
 from tg_cal_reminder.llm.translator import translate_message
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+translator.logger.setLevel(logging.INFO)
 
 
 async def main() -> None:
