@@ -2,8 +2,9 @@ import json
 import logging
 import os
 import textwrap
-from datetime import UTC, datetime
+from datetime import UTC, datetime, tzinfo
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
 import httpx
 from httpx import HTTPError
@@ -11,15 +12,24 @@ from httpx import HTTPError
 logger = logging.getLogger(__name__)
 
 
+def get_current_time(timezone: str) -> str:
+    """Return the current time in ``timezone`` formatted for the system prompt."""
+    try:
+        tz: tzinfo = ZoneInfo(timezone)
+    except Exception:
+        tz = UTC
+    return datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S %Z")
+
+
 def get_current_time_utc() -> str:
-    """Return the current UTC time formatted for the system prompt."""
-    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S %Z")
+    """Return the current UTC time formatted for backward compatibility."""
+    return get_current_time("UTC")
 
 
-SYSTEM_PROMPT = textwrap.dedent(
-    f"""
+PROMPT_TEMPLATE = textwrap.dedent(
+    """
     You are a translation layer for a Telegram bot.
-    Current time: {get_current_time_utc()}.
+    Current time: {current_time}.
     Translate the user message into one of the supported commands:
     /start, /lang <code>, /add_event <event_line>, /edit_event <id event_line>,
     /list_events [username], /list_all_events [from to], /close_event <id …>,
@@ -98,17 +108,26 @@ SYSTEM_PROMPT = textwrap.dedent(
     """.strip()
 )
 
+
+def build_system_prompt(timezone: str) -> str:
+    """Return the system prompt for ``timezone``."""
+    return PROMPT_TEMPLATE.format(current_time=get_current_time(timezone))
+
+
+SYSTEM_PROMPT = build_system_prompt("UTC")
+
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
 async def translate_message(
-    client: httpx.AsyncClient, text: str, language_code: str
+    client: httpx.AsyncClient, text: str, language_code: str, timezone: str = "UTC"
 ) -> dict[str, Any]:
     """Translate a free-form message into a bot command via OpenRouter."""
+    system_prompt = build_system_prompt(timezone)
     payload = {
         "model": "openrouter/auto",
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": f"{language_code}>>> {text}"},
         ],
         "temperature": 0,

@@ -14,7 +14,7 @@ async def handle_update(
     update: dict,
     tg_client: httpx.AsyncClient,
     session_factory: async_sessionmaker[AsyncSession],
-    translator: Callable[[str, str], Awaitable[dict[str, Any]]],
+    translator: Callable[[str, str, str], Awaitable[dict[str, Any]]],
 ) -> None:
     """Process a single Telegram update."""
     message = update.get("message")
@@ -34,7 +34,9 @@ async def handle_update(
         if user is None:
             user = await crud.create_user(session, telegram_id, username=username)
         try:
-            reply = await handlers.dispatch(session, user, text, user.language, translator)
+            reply = await handlers.dispatch(
+                session, user, text, user.language, translator
+            )
         except handlers.HandlerError as err:
             reply = str(err)
 
