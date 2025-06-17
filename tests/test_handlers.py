@@ -221,3 +221,127 @@ async def test_handle_list_events_grouping(
     assert "2025-06-08:" in text
     for ev in (e1, e2, e3, e4):
         assert f"id={ev.id}" in text
+
+
+@pytest.mark.asyncio
+async def _prepare_start(async_session: AsyncSession, user: User):
+    async def check(result: str) -> None:
+        assert result == "Please provide a secret"
+    return "/start", "", check
+
+
+@pytest.mark.asyncio
+async def _prepare_lang(async_session: AsyncSession, user: User):
+    async def check(result: str) -> None:
+        assert result == "Language updated to ru"
+        refreshed = await crud.get_user_by_telegram_id(async_session, user.telegram_id)
+        assert refreshed.language == "ru"
+    return "/lang", "ru", check
+
+
+@pytest.mark.asyncio
+async def _prepare_add_event(async_session: AsyncSession, user: User):
+    now = (
+        datetime.datetime.now(datetime.UTC).replace(second=0, microsecond=0)
+        + datetime.timedelta(days=1)
+    )
+    event_line = f"{now.strftime('%Y-%m-%d %H:%M')} Test"
+
+    async def check(result: str) -> None:
+        events = await crud.list_events(async_session, user.id)
+        assert len(events) == 1
+        ev = events[0]
+        expected_time = now.astimezone(datetime.UTC).strftime('%Y-%m-%d %H:%M')
+        assert result == f"Event {ev.id} added: {expected_time} {ev.title} | id={ev.id}"
+    return "/add_event", event_line, check
+
+
+@pytest.mark.asyncio
+async def _prepare_edit_event(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC).replace(second=0, microsecond=0)
+    ev = await crud.create_event(async_session, user.id, now, "Old")
+    new_time = now + datetime.timedelta(hours=1)
+    args = f"{ev.id} {new_time.strftime('%Y-%m-%d %H:%M')} New"
+
+    async def check(result: str) -> None:
+        assert "updated" in result
+        refreshed = (await crud.list_events(async_session, user.id))[0]
+        assert refreshed.title == "New"
+        assert refreshed.start_time.replace(tzinfo=datetime.UTC) == new_time
+    return "/edit_event", args, check
+
+
+@pytest.mark.asyncio
+async def _prepare_list_events(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC)
+    later = now + datetime.timedelta(hours=1)
+    ev1 = await crud.create_event(async_session, user.id, now, "First")
+    ev2 = await crud.create_event(async_session, user.id, later, "Second")
+
+    async def check(result: str) -> None:
+        assert f"id={ev1.id}" in result and f"id={ev2.id}" in result
+    return "/list_events", "", check
+
+
+@pytest.mark.asyncio
+async def _prepare_list_all_events(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC)
+    ev1 = await crud.create_event(async_session, user.id, now, "A")
+    ev2 = await crud.create_event(async_session, user.id, now + datetime.timedelta(hours=1), "B")
+
+    async def check(result: str) -> None:
+        assert str(ev1.id) in result and str(ev2.id) in result
+    return "/list_all_events", "", check
+
+
+@pytest.mark.asyncio
+async def _prepare_timezone(async_session: AsyncSession, user: User):
+    async def check(result: str) -> None:
+        assert result == "Timezone updated to Europe/Berlin"
+        refreshed = await crud.get_user_by_telegram_id(async_session, user.telegram_id)
+        assert refreshed.timezone == "Europe/Berlin"
+    return "/timezone", "Europe/Berlin", check
+
+
+@pytest.mark.asyncio
+async def _prepare_close_event(async_session: AsyncSession, user: User):
+    now = datetime.datetime.now(datetime.UTC)
+    ev = await crud.create_event(async_session, user.id, now, "ToClose")
+
+    async def check(result: str) -> None:
+        assert str(ev.id) in result and "Closed" in result
+        refreshed = (await crud.list_events(async_session, user.id))[0]
+        assert refreshed.is_closed
+    return "/close_event", str(ev.id), check
+
+
+@pytest.mark.asyncio
+async def _prepare_help(async_session: AsyncSession, user: User):
+    async def check(result: str) -> None:
+        assert "/add_event" in result and "/help" in result
+    return "/help", "", check
+
+
+_PREPARERS = [
+    _prepare_start,
+    _prepare_lang,
+    _prepare_add_event,
+    _prepare_edit_event,
+    _prepare_list_events,
+    _prepare_list_all_events,
+    _prepare_timezone,
+    _prepare_close_event,
+    _prepare_help,
+]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("preparer", _PREPARERS)
+async def test_dispatch_translator_error_none(async_session: AsyncSession, user: User, preparer):
+    command, args, checker = await preparer(async_session, user)
+    translator = AsyncMock(return_value={"command": command, "args": args, "error": None})
+
+    result = await handlers.dispatch(async_session, user, "text", "en", translator)
+
+    translator.assert_called_once()
+    await checker(result)
