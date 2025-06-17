@@ -32,6 +32,9 @@ async def main() -> None:
     # Alembic's upgrade command uses ``asyncio.run`` internally which would
     # block the running event loop, so run it in a separate thread instead.
     await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
+    level_name = os.environ.get("LOG_LEVEL", "INFO").upper()
+    root_level = getattr(logging, level_name, logging.INFO)
+    logging.getLogger().setLevel(root_level)
 
     async with (
         httpx.AsyncClient(base_url=f"https://api.telegram.org/bot{token}/") as tg_client,
