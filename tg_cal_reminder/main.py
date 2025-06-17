@@ -41,8 +41,8 @@ async def main() -> None:
         httpx.AsyncClient() as llm_client,
     ):
 
-        async def translator(text: str, lang: str) -> dict:
-            return await translate_message(llm_client, text, lang)
+        async def translator(text: str, lang: str, tz: str) -> dict:
+            return await translate_message(llm_client, text, lang, tz)
 
         await register_commands(tg_client)
 

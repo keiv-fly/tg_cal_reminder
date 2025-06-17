@@ -231,7 +231,7 @@ async def dispatch(
     user: User,
     text: str,
     language_code: str,
-    translator: Callable[[str, str], Awaitable[dict]] | None = None,
+    translator: Callable[[str, str, str], Awaitable[dict]] | None = None,
 ) -> str:
     ctx = CommandContext(session=session, user=user)
 
@@ -248,7 +248,7 @@ async def dispatch(
     else:
         if translator is None:
             raise HandlerError("No translator provided for free text")
-        result = await translator(text, language_code)
+        result = await translator(text, language_code, user.timezone)
         if "error" in result:
             raise HandlerError(result["error"])
         command = result.get("command", "")
